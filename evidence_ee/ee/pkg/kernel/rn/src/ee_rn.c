@@ -32,7 +32,8 @@ void EE_rn_handler(void){
                 requesting_task = EE_resource_stack[ResID];               
             }
         }
-
+		EE_hal_IRQ_end_primitive();
+		
 		EE_rn_execute(ResID, requesting_task);
 		
 
