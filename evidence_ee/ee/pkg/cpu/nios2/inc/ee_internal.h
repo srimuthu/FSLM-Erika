@@ -32,7 +32,7 @@ extern alt_u32 const EE_IPIC_IRQ;
 
 #ifndef MAIKEL2_H_
 #define MAIKEL2_H_
-#include "C:\altera\81\nios2eds\components\evidence_ee\ee\pkg\kernel\rn\inc\ee_rn_internal.h"
+#include "C:\altera\91\nios2eds\components\evidence_ee\ee\pkg\kernel\rn\inc\ee_rn_internal.h"
 
 extern EE_UINT32 EE_SHARED_DATA_var[4];
 extern EE_UINT32 * Pvar;
@@ -225,7 +225,6 @@ __INLINE__ void __ALWAYS_INLINE__ EE_hal_spin_out(EE_TYPESPIN m){
 		register EE_TYPERN_PARAM par;
 		par.pending = 1;
 		EE_rn_send(task2notify, RN_ReleaseResource, par );
-		EE_hal_IRQ_interprocessor((EE_UREG)task2notify);
 	}
 }	
 
