@@ -4,7 +4,7 @@ from flexStrings import *
 import re
 import copy
 
-DEBUG = False
+DEBUG = True
 UI = True
 
 
@@ -271,7 +271,7 @@ class FlexSpin():
 
         print("\nMapping of tasks and resources ")
         for task in self.__tasks2res:
-            output = str(self.__taskInfo[task][0])+" :\t"
+            output = str(self.__taskInfo[task][0])+"  :\t"
             for res in self.__tasks2res[task]:
                 output += str(self.__resourceInfo[res])+"\t"
             print(output)

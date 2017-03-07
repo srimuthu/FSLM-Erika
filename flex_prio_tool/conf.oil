@@ -12,45 +12,56 @@ CPU test_application {
 		NIOS2_DO_MAKE_OBJDUMP = TRUE;
 		MASTER_CPU = "cpu0";			
 		IPIC_GLOBAL_NAME = "IPIC_OUTPUT";
-		NIOS2_PTF_FILE = "C:/altera/Projects/four_core_jan31/four_core_SOPC.ptf";
-		
+		NIOS2_PTF_FILE = "C:/altera/Projects/four_core_mar4/four_core_SOPC.ptf";
+
 		CPU_DATA = NIOSII {
 			ID = "cpu0";
 			MULTI_STACK = TRUE;
 			APP_SRC = "cpu0_main.c";
 			APP_SRC = "shareddata.c";
 			STACK_TOP = "__alt_stack_pointer";
-			SYS_SIZE = 0x1000; 
-			SYSTEM_LIBRARY_NAME = "erika_ded_syslib_c0";
-			SYSTEM_LIBRARY_PATH = "C:/altera/Projects/four_core_jan31/sw_erika_muthu_3/erika_ded_syslib_c0";
+			SYS_SIZE = 0x1000;
+			SYSTEM_LIBRARY_NAME = "erika_syslib_c0";
+			SYSTEM_LIBRARY_PATH = "C:/altera/Projects/four_core_mar4/software/erika_1/erika_syslib_c0";
 			IPIC_LOCAL_NAME = "IPIC_INPUT_0";
 		};
-		
+
 		CPU_DATA = NIOSII {
 			ID = "cpu1";
 			MULTI_STACK = TRUE;
 			APP_SRC = "cpu1_main.c";
 			APP_SRC = "shareddata.c";
 			STACK_TOP = "__alt_stack_pointer";
-			SYS_SIZE = 0x1000; 
-			SYSTEM_LIBRARY_NAME = "erika_ded_syslib_c1";
-			SYSTEM_LIBRARY_PATH = "C:/altera/Projects/four_core_jan31/sw_erika_muthu_3/erika_ded_syslib_c1";
+			SYS_SIZE = 0x1000;
+			SYSTEM_LIBRARY_NAME = "erika_syslib_c1";
+			SYSTEM_LIBRARY_PATH = "C:/altera/Projects/four_core_mar4/software/erika_1/erika_syslib_c1";
 			IPIC_LOCAL_NAME = "IPIC_INPUT_1";
 		};
-		
+
 		CPU_DATA = NIOSII {
 			ID = "cpu2";
 			MULTI_STACK = TRUE;
 			APP_SRC = "cpu2_main.c";
 			APP_SRC = "shareddata.c";
 			STACK_TOP = "__alt_stack_pointer";
-			SYS_SIZE = 0x1000; 
-			SYSTEM_LIBRARY_NAME = "erika_ded_syslib_c2";
-			SYSTEM_LIBRARY_PATH = "C:/altera/Projects/four_core_jan31/sw_erika_muthu_3/erika_ded_syslib_c2";
+			SYS_SIZE = 0x1000;
+			SYSTEM_LIBRARY_NAME = "erika_syslib_c2";
+			SYSTEM_LIBRARY_PATH = "C:/altera/Projects/four_core_mar4/software/erika_1/erika_syslib_c2";
 			IPIC_LOCAL_NAME = "IPIC_INPUT_2";
 		};
-		
-		
+
+		CPU_DATA = NIOSII {
+			ID = "cpu3";
+			MULTI_STACK = TRUE;
+			APP_SRC = "cpu3_main.c";
+			APP_SRC = "shareddata.c";
+			STACK_TOP = "__alt_stack_pointer";
+			SYS_SIZE = 0x1000;
+			SYSTEM_LIBRARY_NAME = "erika_syslib_c3";
+			SYSTEM_LIBRARY_PATH = "C:/altera/Projects/four_core_mar4/software/erika_1/erika_syslib_c3";
+			IPIC_LOCAL_NAME = "IPIC_INPUT_3";
+		};
+
 		STARTUPSYNC = TRUE;
 
 		STATUS = EXTENDED;
@@ -62,7 +73,7 @@ CPU test_application {
 		USEGETSERVICEID = FALSE;
 		USEPARAMETERACCESS = FALSE;
 		USERESSCHEDULER = FALSE;
-        	
+
 		USEREMOTETASK = ALWAYS;
 		NIOS2_MUTEX_BASE = "MUTEX_0_BASE";
 
@@ -72,50 +83,19 @@ CPU test_application {
 	TASK task0 {
 		CPU_ID = "cpu0";
 		APP_SRC = "task0.c";
-		PRIORITY = 5;
-		ACTIVATION = 1;
-		SCHEDULE = FULL;
-		AUTOSTART = FALSE;
-		STACK = SHARED;
-		/*STACK =  PRIVATE{
-        	SYS_SIZE = 0x100;
-      	};*/
-	};
-
-	TASK task1 {
-		CPU_ID = "cpu2";
-		APP_SRC = "task1.c";
-		PRIORITY = 4;
+		PRIORITY = 1;
 		ACTIVATION = 1;
 		SCHEDULE = FULL;
 		AUTOSTART = FALSE;
 		STACK =  PRIVATE{
         	SYS_SIZE = 0x100;
       	};
-		RESOURCE = R0;
-		RESOURCE = R1;
+      	RESOURCE = mutex0;
 	};
-	
-	TASK task2 {
-		CPU_ID = "cpu1";
-		APP_SRC = "task2.c";
-		PRIORITY = 3;
-		ACTIVATION = 1;
-		SCHEDULE = FULL;
-		AUTOSTART = FALSE;
-		STACK = SHARED;
-		/*STACK =  PRIVATE{
-        	SYS_SIZE = 0x100;
-      	};*/
-		RESOURCE = R1;
-		RESOURCE = R2;
-		RESOURCE = R3;
-	};
-	
-	
-	TASK task3 {
-		CPU_ID = "cpu2";
-		APP_SRC = "task3.c";
+
+	TASK task1 {
+		CPU_ID = "cpu0";
+		APP_SRC = "task1.c";
 		PRIORITY = 2;
 		ACTIVATION = 1;
 		SCHEDULE = FULL;
@@ -123,27 +103,50 @@ CPU test_application {
 		STACK =  PRIVATE{
         	SYS_SIZE = 0x100;
       	};
-		RESOURCE = R2;
-		RESOURCE = R3;
+	};
+
+	TASK task2 {
+		CPU_ID = "cpu0";
+		APP_SRC = "task2.c";
+		PRIORITY = 3;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		STACK =  PRIVATE{
+        	SYS_SIZE = 0x100;
+      	};
+	};
+
+	TASK task3 {
+		CPU_ID = "cpu1";
+		APP_SRC = "task3.c";
+		PRIORITY = 1;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		STACK =  PRIVATE{
+        	SYS_SIZE = 0x100;
+      	};
+      	RESOURCE = mutex1;
 	};
 
 	TASK task4 {
 		CPU_ID = "cpu1";
-		APP_SRC = "task3.c";
-		PRIORITY = 6;
+		APP_SRC = "task4.c";
+		PRIORITY = 2;
 		ACTIVATION = 1;
 		SCHEDULE = FULL;
 		AUTOSTART = FALSE;
 		STACK =  PRIVATE{
         	SYS_SIZE = 0x100;
       	};
-		RESOURCE = R4;
+      	RESOURCE = mutex0;
 	};
 
 	TASK task5 {
-		CPU_ID = "cpu2";
-		APP_SRC = "task3.c";
-		PRIORITY = 7;
+		CPU_ID = "cpu1";
+		APP_SRC = "task5.c";
+		PRIORITY = 3;
 		ACTIVATION = 1;
 		SCHEDULE = FULL;
 		AUTOSTART = FALSE;
@@ -152,7 +155,86 @@ CPU test_application {
       	};
 	};
 
-	RESOURCE mutex {
-		RESOURCEPROPERTY = STANDARD { APP_SRC = "resourcedata.c"; };
+	TASK task6 {
+		CPU_ID = "cpu2";
+		APP_SRC = "task6.c";
+		PRIORITY = 1;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		STACK =  PRIVATE{
+        	SYS_SIZE = 0x100;
+      	};
+      	RESOURCE = mutex1;
+	};
+
+	TASK task7 {
+		CPU_ID = "cpu2";
+		APP_SRC = "task7.c";
+		PRIORITY = 2;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		STACK =  PRIVATE{
+        	SYS_SIZE = 0x100;
+      	};
+      	RESOURCE = mutex0;
+	};
+
+	TASK task8 {
+		CPU_ID = "cpu2";
+		APP_SRC = "task8.c";
+		PRIORITY = 3;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		STACK =  PRIVATE{
+        	SYS_SIZE = 0x100;
+      	};
+	};
+
+	TASK task9 {
+		CPU_ID = "cpu3";
+		APP_SRC = "task9.c";
+		PRIORITY = 1;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		STACK =  PRIVATE{
+        	SYS_SIZE = 0x100;
+      	};
+      	RESOURCE = mutex0;
+	};
+
+	TASK task10 {
+		CPU_ID = "cpu3";
+		APP_SRC = "task10.c";
+		PRIORITY = 2;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		STACK =  PRIVATE{
+        	SYS_SIZE = 0x100;
+      	};
+      	RESOURCE = mutex1;
+	};
+
+	TASK task11 {
+		CPU_ID = "cpu3";
+		APP_SRC = "task11.c";
+		PRIORITY = 3;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		AUTOSTART = FALSE;
+		STACK =  PRIVATE{
+        	SYS_SIZE = 0x100;
+      	};
+	};
+	RESOURCE mutex0 {
+		RESOURCEPROPERTY = STANDARD { APP_SRC = "resource_0_data.c"; };
+	};
+
+	RESOURCE mutex1 {
+		RESOURCEPROPERTY = STANDARD { APP_SRC = "resource_1_data.c"; };
 	};
 };
