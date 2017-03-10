@@ -7,8 +7,13 @@ import copy
 DEBUG = True
 UI = True
 
+# If the source files exist in a different directory
+# prefix SOURCE_NAME_TEMPLATE with the path to the variable
+# Ensure that the path does not contain the string "XXX"
+SOURCE_NAME_TEMPLATE = "cpuXXX_main.c"
+OIL_PATH = "conf.oil"
 
-class OilParser:
+class FlexTool:
 
     def __init__(self, oilPath):
         self.__initSuccess = False
@@ -34,6 +39,19 @@ class OilParser:
         self.__taskInfo = {}
         self.__resourceInfo = {}
         self.__task_block = []
+
+        # FlexSpin tool variables
+        self.__tasks2cores = {}
+        self.__tasks2res = {}
+        self.__tasks2prio = {}
+        self.__resScope = {}
+        self.__tasks2globRes = {}
+        self.__cpPrio = {}
+        self.__cpHatPrio = {}
+        self.__hpPrio = {}
+        self.__userPrio = {}
+        self.__spinPrio = {}
+        self.__tasks2stack = {}
 
         # Set initialization successful
         self.__initSuccess = True
@@ -173,31 +191,7 @@ class OilParser:
 # START OF FLEXSPIN TOOL
 #############################################################################################
 
-class FlexSpin():
-
-    def __init__(self, cpu, task, resource):
-
-        self.__initSuccess = False
-
-        self.__cpuInfo = cpu
-        self.__taskInfo = task
-        self.__resourceInfo = resource
-
-
-        self.__tasks2cores = {}
-        self.__tasks2res = {}
-        self.__tasks2prio = {}
-        self.__resScope = {}
-        self.__tasks2globRes = {}
-        self.__cpPrio = {}
-        self.__cpHatPrio = {}
-        self.__hpPrio = {}
-        self.__userPrio = {}
-        self.__spinPrio = {}
-
-        self.__initSuccess = True
-
-    def initializeVars(self):
+    def initializeFlexSpinToolVars(self):
         """Function to initialize the shared private variables"""
         for task in self.__taskInfo:
             # task2cores mapping
@@ -287,7 +281,8 @@ class FlexSpin():
             for task in self.__tasks2cores:
                 if self.__tasks2cores[task] == core:
                     for res in self.__tasks2res[task]:
-                        output+= str(self.__resourceInfo[res])+"\t"
+                        if output.find(self.__resourceInfo[res]) == -1:
+                            output += str(self.__resourceInfo[res])+"\t"
             print(output)
 
         print("\nDerived priorities ")
@@ -310,20 +305,7 @@ class FlexSpin():
 
     def __calculateSpinPriorities(self):
         for core in self.__userPrio:
-            self.__spinPrio[core] = int(math.pow(2,self.__userPrio[core]))
-
-        if UI:
-            print("\nSpin priorities ")
-            output = "\t\t|\t"
-            for cpu in self.__cpuInfo:
-                output += str(self.__cpuInfo[cpu]) + "|\t"
-            print(output)
-            output = "sp\t\t|\t"
-            for item in self.__spinPrio:
-                output += str(self.__spinPrio[item]) + "\t|\t"
-            print(output)
-
-
+            self.__spinPrio[core] = int(math.pow(2,self.__userPrio[core]-1))
 
     def calculatePriorities(self):
         """Function to calculate the different priority levels"""
@@ -385,6 +367,31 @@ class FlexSpin():
         if UI:
             self.__displayParams()
 
+    def __calculateStackAllocation(self):
+
+        for core in self.__cpuInfo:
+            for task in self.__tasks2cores:
+                if self.__tasks2cores[task] == core:
+                    if self.__tasks2prio[task] > self.__userPrio[core]:
+                        self.__tasks2stack[task] = [self.__taskInfo[task][0], "PRIVATE"]
+                    else:
+                        self.__tasks2stack[task] = [self.__taskInfo[task][0], "SHARED"]
+
+        if UI:
+            print("\nSpin priorities ")
+            output = "\t\t|\t"
+            for cpu in self.__cpuInfo:
+                output += str(self.__cpuInfo[cpu]) + "|\t"
+            print(output)
+            output = "sp\t\t|\t"
+            for item in self.__spinPrio:
+                output += str(self.__spinPrio[item]) + "\t|\t"
+            print(output)
+
+            print("\nStack allocation ")
+            for task in self.__tasks2stack:
+                print(self.__tasks2stack[task])
+
     def getUserInput(self):
         for i in range(len(self.__cpuInfo)):
             valid = False
@@ -401,14 +408,127 @@ class FlexSpin():
                     print("Invalid input . . Enter again")
 
         self.__calculateSpinPriorities()
+        self.__calculateStackAllocation()
+
+    def returnFlexSpinInfo(self):
+        return self.__spinPrio, self.__tasks2stack, self.__cpuInfo, self.__tasks2cores
+
+#############################################################################################
+# END OF FLEXSPIN TOOL
+#############################################################################################
+
+#############################################################################################
+# START OF UPDATE SOURCE
+#############################################################################################
+
+    def updateSourceFiles(self):
+
+        """Function used to update the source files of the cores"""
+
+        for cpu in self.__cpuInfo:
+            file = SOURCE_NAME_TEMPLATE.replace("XXX",str(cpu))
+            # Check if the path is valid:
+            if not os.path.isfile(file):
+                sys.exit("Source file in the specified path does not exist")
+
+        for cpu in self.__cpuInfo:
+            fileName = SOURCE_NAME_TEMPLATE.replace("XXX", str(cpu))
+
+            if UI:
+                print("Updating file: "+fileName)
+
+            with open(fileName, 'r') as file:
+                data = file.readlines()
+
+            indices = [-1, -1]
+
+            if data:
+                for line in data:
+                    if line.find(SPIN_PRIO) != -1:
+                        indices[0] = data.index(line)
+                    if line.find(GLOBAL_TASK_ID) != -1:
+                        indices[1] = data.index(line)
+            else:
+                sys.exit("No content present in file")
+
+            if indices[0] != -1:
+                spin_text = "const int "+SPIN_PRIO+"[] = {"
+                for task in self.__tasks2cores:
+                    if self.__tasks2cores[task] == cpu:
+                        spin_text += "0x"+str(self.__spinPrio[cpu])+","
+                spin_text = spin_text[:-1]
+                spin_text += "};\n"
+                data[indices[0]] = spin_text
+
+            else:
+                print("NOT found spin")
+
+            if indices[1] != -1:
+                glob_text = "const int " + GLOBAL_TASK_ID + "[] = {"
+                for task in self.__tasks2cores:
+                    if self.__tasks2cores[task] == cpu:
+                        glob_text += str(task) + ","
+                glob_text = glob_text[:-1]
+                glob_text += "};\n"
+                data[indices[1]] = glob_text
+
+            else:
+                print("NOT found glob")
+
+            with open(fileName, 'w') as file:
+                file.writelines(data)
+
+    def updateOilFile(self):
+
+        """Modify the stack configuration of the tasks in the OIL file"""
+
+        with open(OIL_PATH, 'r') as file:
+            data = file.readlines()
+
+
+        task_pos = {}
+
+        for task in self.__tasks2stack:
+            task_info_start = False
+            task_name = ""
+            task_counter = -1
+            brace_counter = 0
+            for line in data:
+                if line.find(TASK_DATA) != -1 and not task_info_start:
+                    task_name = str(re.search('TASK (.+?) ', line).group(1))
+                    if task_name == self.__tasks2stack[task][0]:
+                        task_info_start = True
+                        task_counter += 1
+                        task_pos[task] = data.index(line)
+
+        for task in self.__tasks2stack:
+            flag = False
+            idx = task_pos[task]
+            for i in range(idx, idx+100):
+                if data[i].find('STACK') != -1:
+                    data[i] = ""
+                    output  = "\t\tSTACK = "
+                    if self.__tasks2stack[task][1] == "SHARED":
+                        output += "SHARED;\n"
+                    elif self.__tasks2stack[task][1] == "PRIVATE":
+                        output += "PRIVATE{ \tSYS_SIZE = 0x100; \t};\n"
+                    data[i] = output
+                    break
+
+        with open(OIL_PATH, 'w') as file:
+            file.writelines(data)
+
 
 if __name__ == "__main__":
 
-    parserObj = OilParser("conf.oil")
-    cpu, task, res = parserObj.parseOilFile()
-    del(parserObj)
-
-    flexObj = FlexSpin(cpu, task, res)
-    flexObj.initializeVars()
+    flexObj = FlexTool(OIL_PATH)
+    flexObj.parseOilFile()
+    flexObj.initializeFlexSpinToolVars()
     flexObj.calculatePriorities()
     flexObj.getUserInput()
+    flexObj.updateSourceFiles()
+    flexObj.updateOilFile()
+
+    del(flexObj)
+
+    
