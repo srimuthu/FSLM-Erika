@@ -3,7 +3,7 @@ import math
 from flexStrings import *
 import re
 import copy
-
+from prettytable import PrettyTable
 DEBUG = True
 UI = True
 
@@ -11,6 +11,7 @@ UI = True
 # prefix SOURCE_NAME_TEMPLATE with the path to the variable
 # Ensure that the path does not contain the string "XXX"
 SOURCE_NAME_TEMPLATE = "cpuXXX_main.c"
+EECFG_NAME_TEMPLATE = "Debug/cpuXXX/eecfg.c"
 OIL_PATH = "conf.oil"
 
 class FlexTool:
@@ -52,7 +53,7 @@ class FlexTool:
         self.__userPrio = {}
         self.__spinPrio = {}
         self.__tasks2stack = {}
-
+        self.__isStackEditRequired = {}
         # Set initialization successful
         self.__initSuccess = True
 
@@ -253,15 +254,13 @@ class FlexTool:
     def __displayParams(self):
 
         print("Mapping of cores and tasks ")
-        print("TaskID\t|\tTask\t|\tCoreID\t|\tCore\t|\t")
-        print("------\t|\t----\t|\t------\t|\t----\t|\t")
+        t = PrettyTable(['TaskID','Task','CoreID','Core'])
         for task in self.__tasks2cores:
-            print("{0}\t\t|\t{1}\t|\t{2}\t\t|\t{3}\t|\t".format(
-                task,
+            t.add_row([task,
                 self.__taskInfo[task][0],
                 self.__tasks2cores[task],
-                self.__cpuInfo[self.__tasks2cores[task]]
-            ))
+                self.__cpuInfo[self.__tasks2cores[task]]])
+        print(t)
 
         print("\nMapping of tasks and resources ")
         for task in self.__tasks2res:
@@ -286,22 +285,22 @@ class FlexTool:
             print(output)
 
         print("\nDerived priorities ")
-        output = "\t\t|\t"
-        for cpu in self.__cpuInfo:
-            output += str(self.__cpuInfo[cpu])+"|\t"
-        print(output)
-        output = "hp\t\t|\t"
+        head1 = [" "]
+        head2 = [str(self.__cpuInfo[cpu]) for cpu in self.__cpuInfo]
+        t = PrettyTable(head1+head2)
+        output = ["hp"]
         for item in self.__hpPrio:
-            output += str(self.__hpPrio[item])+"\t|\t"
-        print(output)
-        output = "cp^\t\t|\t"
+            output.append(str(self.__hpPrio[item]))
+        t.add_row(output)
+        output = ["cp^"]
         for item in self.__cpHatPrio:
-            output += str(self.__cpHatPrio[item]) + "\t|\t"
-        print(output)
-        output = "cp\t\t|\t"
+            output.append(str(self.__cpHatPrio[item]))
+        t.add_row(output)
+        output = ["cp"]
         for item in self.__cpPrio:
-            output += str(self.__cpPrio[item]) + "\t|\t"
-        print(output)
+            output.append(str(self.__cpPrio[item]))
+        t.add_row(output)
+        print(t)
 
     def __calculateSpinPriorities(self):
         for core in self.__userPrio:
@@ -370,27 +369,35 @@ class FlexTool:
     def __calculateStackAllocation(self):
 
         for core in self.__cpuInfo:
+            stack_edit_counter = 0
             for task in self.__tasks2cores:
                 if self.__tasks2cores[task] == core:
                     if self.__tasks2prio[task] > self.__userPrio[core]:
-                        self.__tasks2stack[task] = [self.__taskInfo[task][0], "PRIVATE"]
+                        stack_edit_counter += 1
+                        self.__tasks2stack[task] = [self.__taskInfo[task][0], "STACK2"]
                     else:
-                        self.__tasks2stack[task] = [self.__taskInfo[task][0], "SHARED"]
+                        self.__tasks2stack[task] = [self.__taskInfo[task][0], "STACK1"]
 
+            if stack_edit_counter > 1:
+                self.__isStackEditRequired[core] = True
+            else:
+                self.__isStackEditRequired[core] = False
         if UI:
             print("\nSpin priorities ")
-            output = "\t\t|\t"
-            for cpu in self.__cpuInfo:
-                output += str(self.__cpuInfo[cpu]) + "|\t"
-            print(output)
-            output = "sp\t\t|\t"
+            head1 = [" "]
+            head2 = [str(self.__cpuInfo[cpu]) for cpu in self.__cpuInfo]
+            t = PrettyTable(head1 + head2)
+            output = ["sp"]
             for item in self.__spinPrio:
-                output += str(self.__spinPrio[item]) + "\t|\t"
-            print(output)
+                output.append(str(self.__spinPrio[item]))
+            t.add_row(output)
+            print(t)
 
             print("\nStack allocation ")
+            t = PrettyTable(['CPU', 'Task', 'Stack'])
             for task in self.__tasks2stack:
-                print(self.__tasks2stack[task])
+                t.add_row([str(self.__tasks2cores[task])]+ self.__tasks2stack[task])
+            print(t)
 
     def getUserInput(self):
         for i in range(len(self.__cpuInfo)):
@@ -440,6 +447,7 @@ class FlexTool:
             with open(fileName, 'r') as file:
                 data = file.readlines()
 
+            # line_id =[ "EE_th_spin_prio", "GlobalTaskID"]
             indices = [-1, -1]
 
             if data:
@@ -449,7 +457,7 @@ class FlexTool:
                     if line.find(GLOBAL_TASK_ID) != -1:
                         indices[1] = data.index(line)
             else:
-                sys.exit("No content present in file")
+                sys.exit("No content present in source file")
 
             if indices[0] != -1:
                 spin_text = "const int "+SPIN_PRIO+"[] = {"
@@ -461,7 +469,7 @@ class FlexTool:
                 data[indices[0]] = spin_text
 
             else:
-                print("NOT found spin")
+                print("NOT found EE_th_spin_prio - Application may not work as intended")
 
             if indices[1] != -1:
                 glob_text = "const int " + GLOBAL_TASK_ID + "[] = {"
@@ -473,7 +481,7 @@ class FlexTool:
                 data[indices[1]] = glob_text
 
             else:
-                print("NOT found glob")
+                print("NOT found GlobalTaskID - Application may not work as intended")
 
             with open(fileName, 'w') as file:
                 file.writelines(data)
@@ -485,14 +493,12 @@ class FlexTool:
         with open(OIL_PATH, 'r') as file:
             data = file.readlines()
 
-
         task_pos = {}
 
         for task in self.__tasks2stack:
             task_info_start = False
             task_name = ""
             task_counter = -1
-            brace_counter = 0
             for line in data:
                 if line.find(TASK_DATA) != -1 and not task_info_start:
                     task_name = str(re.search('TASK (.+?) ', line).group(1))
@@ -508,15 +514,146 @@ class FlexTool:
                 if data[i].find('STACK') != -1:
                     data[i] = ""
                     output  = "\t\tSTACK = "
-                    if self.__tasks2stack[task][1] == "SHARED":
+                    if self.__tasks2stack[task][1] == "STACK1":
                         output += "SHARED;\n"
-                    elif self.__tasks2stack[task][1] == "PRIVATE":
+                    elif self.__tasks2stack[task][1] == "STACK2":
                         output += "PRIVATE{ \tSYS_SIZE = 0x100; \t};\n"
                     data[i] = output
                     break
 
         with open(OIL_PATH, 'w') as file:
             file.writelines(data)
+
+        self.promptUser()
+
+    def __findBraceBlock(self, data, item):
+
+        """"Function to identify a brace enclosed block.
+            Takes the file buffer (data) and the item to be found (item) (str)
+            as the input arguments"""
+        if not data:
+            sys.exit("No valid data to parse !! ")
+
+        info_start = False
+        brace_counter = 0
+        block_start_index = -1
+        block_end_index = -1
+        block_data = []
+
+        for line in data:
+            if line.find(item) != -1 and not info_start:
+                info_start = True
+                block_start_index = data.index(line)
+                block_data = []
+
+            if info_start:
+                if line.find('{') != -1:
+                    brace_counter += 1
+                if line.find('}') != -1:
+                    brace_counter -= 1
+                block_data.append(line)
+                if brace_counter == 0:
+                    info_start = False
+                    block_end_index = block_start_index + len(block_data)
+                    return block_start_index, block_end_index, block_data
+
+
+    def __editThreadTos(self, block_data, cpu):
+
+        if self.__isStackEditRequired[cpu]:
+            t2s_counter = 0
+            for task in self.__tasks2stack:
+                if self.__tasks2cores[task] == cpu and self.__tasks2stack[task][1] == "STACK2":
+                    t2s_counter += 1
+                    if t2s_counter > 1:
+                        for i in range(0,len(block_data)):
+                            if block_data[i].find(self.__tasks2stack[task][0]) != -1:
+                                blah1 = block_data[i]
+                                blah2 = self.__tasks2stack[task][0]
+                                txt2replace = block_data[i][:(block_data[i].find("/*"))]
+                                txtNew = txt2replace.replace(str(t2s_counter),"1")
+                                block_data[i] = block_data[i].replace(txt2replace,txtNew)
+            return True, block_data
+        else:
+            return False, block_data
+
+    def __editSystemTos(self, block_data, cpu):
+
+        if self.__isStackEditRequired[cpu]:
+            new_block = []
+            new_block.append(WARN_STR)
+            # Line 1:
+            line1 = block_data[0]
+            numInLine1 = str(re.search('EE_nios2_system_tos(.+?) ', line1).group(1))
+            line1 = line1.replace(numInLine1,"[2]")
+            new_block.append(line1)
+            # Line 2:
+            new_block.append(block_data[1])
+            # Line 3:
+            new_block.append(block_data[2].replace(",",""))
+            # Line 4:
+            new_block.append(block_data[-1])
+
+            return True, new_block
+
+        else:
+            return False, block_data
+
+
+
+    def __spliceTextToFileBuffer(self, file_buffer, block_data, start_index, end_index):
+
+        splicedList = file_buffer[:start_index]
+        splicedList = splicedList + block_data
+        splicedList = splicedList + file_buffer[end_index:]
+        return splicedList
+
+    def updateCfgFiles(self):
+        """Function to update Erika configuration files to
+            include stack information"""
+
+        for cpu in self.__cpuInfo:
+            file = EECFG_NAME_TEMPLATE.replace("XXX",str(cpu))
+            # Check if the path is valid:
+            if not os.path.isfile(file):
+                sys.exit("eecfg.c in the specified path does not exist")
+
+            with open(file, 'r') as f:
+                data = f.readlines()
+            # Find EE_hal_thread_tos
+            bsi, bei, bd = self.__findBraceBlock(data, THREAD_TOS)
+            isReplaced, bd = self.__editThreadTos(bd, cpu)
+
+            if isReplaced:
+                if DEBUG:
+                    print("Modifying stack {0} info for cpu{1}".format(THREAD_TOS, cpu))
+                data = self.__spliceTextToFileBuffer(data, bd, bsi, bei)
+
+            #Find EE_nios2_system_tos
+            bsi, bei, bd = self.__findBraceBlock(data, SYSTEM_TOS)
+            isReplaced, bd = self.__editSystemTos(bd, cpu)
+
+            if isReplaced:
+                if DEBUG:
+                    print("Modifying stack {0} info for cpu{1}".format(SYSTEM_TOS, cpu))
+                data = self.__spliceTextToFileBuffer(data, bd, bsi, bei)
+
+            with open(file, 'w') as f:
+                f.writelines(data)
+
+
+    def promptUser(self):
+
+        user_input = None
+        valid = False
+        print("OIL file and source files updated ! Clean and Build Erika !!")
+        while not valid:
+            user_input = input("Press y to resume AFTER THE BUILD is complete! : ")
+            if user_input == "y" or user_input == "Y":
+                valid = True
+            else:
+                print("Invalid input .. Enter again")
+
 
 
 if __name__ == "__main__":
@@ -528,7 +665,6 @@ if __name__ == "__main__":
     flexObj.getUserInput()
     flexObj.updateSourceFiles()
     flexObj.updateOilFile()
+    flexObj.updateCfgFiles()
 
     del(flexObj)
-
-    
