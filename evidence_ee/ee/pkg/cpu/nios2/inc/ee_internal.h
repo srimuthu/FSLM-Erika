@@ -30,8 +30,8 @@ extern alt_u32 *const EE_IPIC_INPUT_BASE;
 extern alt_u32 const EE_IPIC_IRQ;
 
 
-#ifndef MAIKEL2_H_
-#define MAIKEL2_H_
+#ifndef FSLM2_H_
+#define FSLM2_H_
 #include "C:\altera\91\nios2eds\components\evidence_ee\ee\pkg\kernel\rn\inc\ee_rn_internal.h"
 
 extern EE_UINT32 EE_SHARED_DATA_var[4];
@@ -62,7 +62,7 @@ extern const int GlobalTaskID[];
   
 
 
-#endif /*MAIKEL2_H_*/
+#endif /*FSLM2_H_*/
 
 __INLINE__ void __ALWAYS_INLINE__ EE_hal_begin_primitive(void){EE_hal_disableIRQ();}
 __INLINE__ void __ALWAYS_INLINE__ EE_hal_IRQ_begin_primitive(void){EE_hal_disableIRQ();}
