@@ -647,6 +647,7 @@ class FlexTool:
         user_input = None
         valid = False
         print("OIL file and source files updated ! Clean and Build Erika !!")
+        print("Do not forget to Refresh the project in Eclipse \n")
         while not valid:
             user_input = input("Press y to resume AFTER THE BUILD is complete! : ")
             if user_input == "y" or user_input == "Y":

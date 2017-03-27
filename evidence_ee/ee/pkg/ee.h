@@ -251,6 +251,13 @@ extern "C" {
 
 #include "ee_api.h"
 
+	/*
+	*
+	* MEASUREMENT
+	*
+	*/
+
+#include "ee_fslm_measure.h"
 
 #if defined(__cplusplus)
 };

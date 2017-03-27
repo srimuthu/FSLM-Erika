@@ -114,7 +114,7 @@ CPU test_application {
 	TASK task3 {
 		CPU_ID = "cpu1";
 		APP_SRC = "task3.c";
-		PRIORITY = 1;
+		PRIORITY = 4;
 		ACTIVATION = 1;
 		SCHEDULE = FULL;
 		AUTOSTART = FALSE;
@@ -125,7 +125,7 @@ CPU test_application {
 	TASK task4 {
 		CPU_ID = "cpu1";
 		APP_SRC = "task4.c";
-		PRIORITY = 2;
+		PRIORITY = 5;
 		ACTIVATION = 1;
 		SCHEDULE = FULL;
 		AUTOSTART = FALSE;
@@ -136,7 +136,7 @@ CPU test_application {
 	TASK task5 {
 		CPU_ID = "cpu1";
 		APP_SRC = "task5.c";
-		PRIORITY = 3;
+		PRIORITY = 6;
 		ACTIVATION = 1;
 		SCHEDULE = FULL;
 		AUTOSTART = FALSE;
@@ -146,7 +146,7 @@ CPU test_application {
 	TASK task6 {
 		CPU_ID = "cpu2";
 		APP_SRC = "task6.c";
-		PRIORITY = 1;
+		PRIORITY = 7;
 		ACTIVATION = 1;
 		SCHEDULE = FULL;
 		AUTOSTART = FALSE;
@@ -157,7 +157,7 @@ CPU test_application {
 	TASK task7 {
 		CPU_ID = "cpu2";
 		APP_SRC = "task7.c";
-		PRIORITY = 2;
+		PRIORITY = 8;
 		ACTIVATION = 1;
 		SCHEDULE = FULL;
 		AUTOSTART = FALSE;
@@ -168,7 +168,7 @@ CPU test_application {
 	TASK task8 {
 		CPU_ID = "cpu2";
 		APP_SRC = "task8.c";
-		PRIORITY = 3;
+		PRIORITY = 9;
 		ACTIVATION = 1;
 		SCHEDULE = FULL;
 		AUTOSTART = FALSE;
@@ -179,7 +179,7 @@ CPU test_application {
 	TASK task9 {
 		CPU_ID = "cpu3";
 		APP_SRC = "task9.c";
-		PRIORITY = 1;
+		PRIORITY = 10;
 		ACTIVATION = 1;
 		SCHEDULE = FULL;
 		AUTOSTART = FALSE;
@@ -190,7 +190,7 @@ CPU test_application {
 	TASK task10 {
 		CPU_ID = "cpu3";
 		APP_SRC = "task10.c";
-		PRIORITY = 2;
+		PRIORITY = 11;
 		ACTIVATION = 1;
 		SCHEDULE = FULL;
 		AUTOSTART = FALSE;
@@ -201,7 +201,7 @@ CPU test_application {
 	TASK task11 {
 		CPU_ID = "cpu3";
 		APP_SRC = "task11.c";
-		PRIORITY = 3;
+		PRIORITY = 13;
 		ACTIVATION = 1;
 		SCHEDULE = FULL;
 		AUTOSTART = FALSE;
@@ -211,7 +211,7 @@ CPU test_application {
 	TASK task12 {
 		CPU_ID = "cpu3";
 		APP_SRC = "task12.c";
-		PRIORITY = 4;
+		PRIORITY = 14;
 		ACTIVATION = 1;
 		SCHEDULE = FULL;
 		AUTOSTART = FALSE;

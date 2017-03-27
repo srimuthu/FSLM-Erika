@@ -1,5 +1,6 @@
 #include "ee.h"
 #include "ee_internal.h"
+#include "ee_fslm_measure.h"
 
 void EE_rn_execute(ResourceType ResID, EE_TID requesting_task){
 	
@@ -14,12 +15,20 @@ void EE_rn_execute(ResourceType ResID, EE_TID requesting_task){
 			EE_hal_stkchange(requesting_task);
 		}
 		
-	}
-	
+	}	
 }
 
 void EE_rn_handler(void){
-        
+
+
+	#ifdef MF_RN_HANDLER
+		PERF_RESET(PERFORMANCE_COUNTER_1_BASE);
+		PERF_START_MEASURING(PERFORMANCE_COUNTER_1_BASE);
+		PERF_BEGIN(PERFORMANCE_COUNTER_1_BASE,0);
+	#endif
+		
+
+	
 		int i;
         ResourceType ResID = 0xff;
         EE_TID requesting_task = -1;
@@ -33,10 +42,30 @@ void EE_rn_handler(void){
             }
         }
 		EE_hal_IRQ_end_primitive();
+	
+	#ifdef MF_RN_HANDLER	
+		PERF_END(PERFORMANCE_COUNTER_1_BASE,0);
+		PERF_STOP_MEASURING(PERFORMANCE_COUNTER_1_BASE);
+		MeasureQ[EE_CURRENTCPU][MF_RN_HANDLER] = perf_get_section_time((void *)PERFORMANCE_COUNTER_1_BASE, 0);
+	#endif
+		
+	#ifdef MF_RN_EXECUTE
+		PERF_RESET(PERFORMANCE_COUNTER_1_BASE);
+		PERF_START_MEASURING(PERFORMANCE_COUNTER_1_BASE);
+		PERF_BEGIN(PERFORMANCE_COUNTER_1_BASE,1);
+	#endif	
 		
 		EE_rn_execute(ResID, requesting_task);
-		
+	
+	#ifdef MF_RN_EXECUTE	
+		PERF_END(PERFORMANCE_COUNTER_1_BASE,1);
+		PERF_STOP_MEASURING(PERFORMANCE_COUNTER_1_BASE);
+		MeasureQ[EE_CURRENTCPU][MF_RN_EXECUTE] = perf_get_section_time((void *)PERFORMANCE_COUNTER_1_BASE, 1);
+	#endif
 
         EE_hal_IRQ_begin_primitive();
         EE_hal_IRQ_interprocessor_served(EE_CURRENTCPU);
+
+	
+
 }

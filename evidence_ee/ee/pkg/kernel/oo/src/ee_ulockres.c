@@ -1,10 +1,12 @@
 #include "ee_internal.h"
+#include "ee_fslm_measure.h"
 
 StatusType EE_oo_ReleaseResource(ResourceType ResID){
 	EE_TID rq, current;
 	EE_UREG isGlobal;
 	register EE_FREG flag;
 	extern int Preemption_took_place;
+
 
 	isGlobal = ResID & EE_GLOBAL_MUTEX;
 	ResID = ResID & ~EE_GLOBAL_MUTEX;
@@ -16,7 +18,7 @@ StatusType EE_oo_ReleaseResource(ResourceType ResID){
 	flag = EE_hal_begin_nested_primitive();
         EE_resource_stack[ResID] = -1;
 		EE_resource_locked[ResID] = 0;
-		
+    	
 		if (isGlobal) EE_hal_spin_out(ResID);
 					
 
