@@ -9,7 +9,7 @@ Author: S.M.N. Balasubramanian
 #define __EE_FSLM_MEASURE_H__
 
 //Measurement variables
-#define NUM_MEASUREMENT_PARAMS	4
+#define NUM_MEASUREMENT_PARAMS	8
 #define NUM_CPU					4
 
 extern EE_UINT32 * MeasureQ[NUM_CPU];
@@ -30,12 +30,16 @@ Each measurement flag has a unique ID
 */
 
 /*
-	REMOTE NOTIFICATION MEASUREMENTS
+	OVERHEAD MEASUREMENTS
 */
-//#define MF_RN_SEND						0		//C0 S0
-#define MF_RN_HANDLER					1		//C1 S0 
-#define MF_RN_EXECUTE					2		//C1 S1
-#define MF_RELEASE2LOCK                 3       //C0 S0
+#define MF_REQ_ADMIN						0	//C0 S0	- I
+#define MF_REQ_SPIN							1	//C0 S1	- I
+//#define MF_INTR_HANDLER						2	//C0 S0	- II
+//#define MF_INTR_EXEC						3	//C1 S0	- II
+//#define MF_INTR_SEND						4	//C1 S0	- I
+//#define MF_INTR_CS							5	//C0 S2 - II
+//#define MF_REL_ADMIN						6	//C1 S0	- II
+//#define MF_REL_CS							7	//C1 S1	- II
 
 /*
 Measurement start template

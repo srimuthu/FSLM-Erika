@@ -15,7 +15,7 @@
 
 #include "ee_internal.h"
 #include "SPIN_PRIO.h"
-
+#include "ee_fslm_measure.h"
 #include "sys/alt_stdio.h"
 
 #include "altera_avalon_performance_counter.h"
@@ -182,12 +182,25 @@ __INLINE__ void __ALWAYS_INLINE__ EE_hal_spin_out_int(EE_TYPESPIN m){
 //extern const EE_TYPEPRIO EE_MAX_prio;
 //extern EE_TYPEPRIO EE_sys_ceiling;
 __INLINE__ void __ALWAYS_INLINE__ EE_hal_spin_in(EE_TYPESPIN m){	
+	
 	spin_lock=0;
 	
 	EE_altera_mutex_spin_in();
         if((*(EE_UINT32 *)TailQ[m]) != 0xa0){
+	#ifdef MF_REQ_ADMIN
+	#ifdef MF_REQ_SPIN
+			PERF_BEGIN(PERFORMANCE_COUNTER_0_BASE,1);
+			PERF_END(PERFORMANCE_COUNTER_0_BASE,0);
+	#endif
+	#endif			
 			spin_lock=1;
             *(EE_UINT32 *)TailQ[m]=GlobalTaskID[EE_stkfirst];
+	#ifdef MF_REQ_ADMIN
+	#ifdef MF_REQ_SPIN
+			PERF_END(PERFORMANCE_COUNTER_0_BASE,1);
+			PERF_BEGIN(PERFORMANCE_COUNTER_0_BASE,0);
+	#endif
+	#endif
         }
         ResourceQ[m][EE_CURRENTCPU]=GlobalTaskID[EE_stkfirst];
         TailQ[m]=(EE_UINT32)&ResourceQ[m][EE_CURRENTCPU];
@@ -195,17 +208,35 @@ __INLINE__ void __ALWAYS_INLINE__ EE_hal_spin_in(EE_TYPESPIN m){
 	
 	
 	
-					
+			
 	if(spin_lock==1){
+#ifdef MF_REQ_ADMIN
+#ifdef MF_REQ_SPIN
+		PERF_BEGIN(PERFORMANCE_COUNTER_0_BASE,1);
+		PERF_END(PERFORMANCE_COUNTER_0_BASE,0);
+#endif
+#endif	
 		EE_sys_ceiling|=EE_th_spin_prio[EE_stkfirst];
 		EE_sys_ceiling&=~0x80;
+#ifdef MF_REQ_ADMIN
+#ifdef MF_REQ_SPIN
+		PERF_END(PERFORMANCE_COUNTER_0_BASE,1);
+		PERF_BEGIN(PERFORMANCE_COUNTER_0_BASE,0);
+#endif
+#endif	
 	}
-	
+
 	
 	
 	EE_hal_IRQ_end_primitive();
+
+#ifdef MF_REQ_ADMIN	
+	PERF_END(PERFORMANCE_COUNTER_0_BASE,0);
+	PERF_STOP_MEASURING(PERFORMANCE_COUNTER_0_BASE);
+	MeasureQ[EE_CURRENTCPU][MF_REQ_ADMIN] = perf_get_section_time((void *)PERFORMANCE_COUNTER_0_BASE, 0);
+	MeasureQ[EE_CURRENTCPU][MF_REQ_SPIN] = perf_get_section_time((void *)PERFORMANCE_COUNTER_0_BASE, 1);
+#endif 
 	
-		
 	while (spin_lock !=0){;;}		
 }
 
@@ -222,9 +253,15 @@ __INLINE__ void __ALWAYS_INLINE__ EE_hal_spin_out(EE_TYPESPIN m){
     EE_altera_mutex_spin_out();
 		
     if(task2notify!=GlobalTaskID[EE_stkfirst]){	
+	#ifdef MF_REL_ADMIN
+		PERF_END(PERFORMANCE_COUNTER_1_BASE,0);
+	#endif
 		register EE_TYPERN_PARAM par;
 		par.pending = 1;
 		EE_rn_send(task2notify, RN_ReleaseResource, par );
+	#ifdef MF_REL_ADMIN
+		PERF_BEGIN(PERFORMANCE_COUNTER_1_BASE,0);
+	#endif
 	}
 }	
 

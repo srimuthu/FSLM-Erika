@@ -1,9 +1,17 @@
 #include "ee_internal.h"
-
+#include "ee_fslm_measure.h"
 
 StatusType EE_oo_GetResource(ResourceType ResID){
+
+	
 	register EE_UREG isGlobal;
 	register EE_FREG flag;
+
+#ifdef MF_REQ_ADMIN
+    PERF_RESET(PERFORMANCE_COUNTER_0_BASE);
+    PERF_START_MEASURING(PERFORMANCE_COUNTER_0_BASE);
+    PERF_BEGIN(PERFORMANCE_COUNTER_0_BASE,0);
+#endif
 	
 	isGlobal = ResID & EE_GLOBAL_MUTEX;
 	ResID = ResID & ~EE_GLOBAL_MUTEX;
@@ -14,7 +22,11 @@ StatusType EE_oo_GetResource(ResourceType ResID){
         EE_resource_stack[ResID] = EE_stkfirst;
 		EE_resource_locked[ResID] = 1;
 		EE_sys_ceiling |= 0x80;
+
+
+		
 		if (isGlobal){ EE_hal_spin_in(ResID);}
-	EE_hal_end_nested_primitive(flag);
+	EE_hal_end_nested_primitive(flag);   	
+
 	return E_OK;
 }

@@ -258,6 +258,7 @@ extern "C" {
 	*/
 
 #include "ee_fslm_measure.h"
+//#include "altera_avalon_timer.h"
 
 #if defined(__cplusplus)
 };

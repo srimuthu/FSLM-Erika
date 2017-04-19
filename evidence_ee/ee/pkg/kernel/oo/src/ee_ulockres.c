@@ -2,6 +2,11 @@
 #include "ee_fslm_measure.h"
 
 StatusType EE_oo_ReleaseResource(ResourceType ResID){
+#ifdef MF_REL_ADMIN
+    PERF_RESET(PERFORMANCE_COUNTER_1_BASE);
+    PERF_START_MEASURING(PERFORMANCE_COUNTER_1_BASE);
+    PERF_BEGIN(PERFORMANCE_COUNTER_1_BASE,0);
+#endif
 	EE_TID rq, current;
 	EE_UREG isGlobal;
 	register EE_FREG flag;
@@ -31,10 +36,19 @@ StatusType EE_oo_ReleaseResource(ResourceType ResID){
 		EE_sys_ceiling |= EE_th_dispatch_prio[EE_stkfirst];
 
 		if(Preemption_took_place==1){
+		#ifdef MF_REL_CS
+			PERF_END(PERFORMANCE_COUNTER_1_BASE,0);
+			PERF_BEGIN(PERFORMANCE_COUNTER_1_BASE,1);
+		#endif
+			
 			Preemption_took_place=0;
 			if(EE_th_ready_prio[EE_stkfirst]>= EE_th_ready_prio[rq] || rq == EE_NIL){							
 				EE_hal_stkchange(EE_stkfirst);
 			}
+		#ifdef MF_REL_CS
+			PERF_END(PERFORMANCE_COUNTER_1_BASE,1);
+			PERF_BEGIN(PERFORMANCE_COUNTER_1_BASE,0);
+		#endif
 		}
 
 		
@@ -53,6 +67,12 @@ StatusType EE_oo_ReleaseResource(ResourceType ResID){
 		
 		 
 	EE_hal_end_nested_primitive(flag); 
-
+#ifdef MF_REL_ADMIN	
+	PERF_END(PERFORMANCE_COUNTER_1_BASE,0);
+	PERF_STOP_MEASURING(PERFORMANCE_COUNTER_1_BASE);
+    MeasureQ[EE_CURRENTCPU][MF_REL_ADMIN] = perf_get_section_time((void *)PERFORMANCE_COUNTER_1_BASE, 0);
+	MeasureQ[EE_CURRENTCPU][MF_REL_CS] = perf_get_section_time((void *)PERFORMANCE_COUNTER_1_BASE, 1);
+#endif
+	
 	return E_OK;
 }
