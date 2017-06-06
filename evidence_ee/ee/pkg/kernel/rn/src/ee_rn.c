@@ -41,27 +41,16 @@ void EE_di_handler(void){
         }
 		EE_hal_IRQ_end_primitive();
 		
-	#ifdef MF_INTR_HANDLER	
-		PERF_END(PERFORMANCE_COUNTER_0_BASE,0);
-		PERF_STOP_MEASURING(PERFORMANCE_COUNTER_0_BASE);
-		MeasureQ[EE_CURRENTCPU][MF_INTR_HANDLER] = perf_get_section_time((void *)PERFORMANCE_COUNTER_0_BASE, 0);
-	#endif
-	#ifdef MF_INTR_EXEC
-		PERF_RESET(PERFORMANCE_COUNTER_1_BASE);
-		PERF_START_MEASURING(PERFORMANCE_COUNTER_1_BASE);
-		PERF_BEGIN(PERFORMANCE_COUNTER_1_BASE,0);
-	#endif
-	
 		EE_di_execute(ResID, requesting_task);
 
         EE_hal_IRQ_begin_primitive();
         EE_hal_IRQ_interprocessor_served(EE_CURRENTCPU);
-	
-	#ifdef MF_INTR_EXEC
-		PERF_END(PERFORMANCE_COUNTER_1_BASE,0);
-		PERF_STOP_MEASURING(PERFORMANCE_COUNTER_1_BASE);
-		MeasureQ[EE_CURRENTCPU][MF_INTR_EXEC] = perf_get_section_time((void *)PERFORMANCE_COUNTER_1_BASE, 0);
-	#endif	
+		
+#ifdef MF_INTR_HANDLER	
+	PERF_END(PERFORMANCE_COUNTER_0_BASE,0);
+	PERF_STOP_MEASURING(PERFORMANCE_COUNTER_0_BASE);
+	MeasureQ[EE_CURRENTCPU][MF_INTR_HANDLER] = perf_get_section_time((void *)PERFORMANCE_COUNTER_0_BASE, 0);
+#endif		
 
 	
 

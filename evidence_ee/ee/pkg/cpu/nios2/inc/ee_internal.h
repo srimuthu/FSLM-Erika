@@ -191,15 +191,15 @@ __INLINE__ void __ALWAYS_INLINE__ EE_hal_spin_in(EE_TYPESPIN m){
 			PERF_BEGIN(PERFORMANCE_COUNTER_0_BASE,1);
 			PERF_END(PERFORMANCE_COUNTER_0_BASE,0);
 	#endif
-	#endif			
+	#endif
 			spin_lock=1;
-            *(EE_UINT32 *)TailQ[m]=GlobalTaskID[EE_stkfirst];
 	#ifdef MF_REQ_ADMIN
 	#ifdef MF_REQ_SPIN
 			PERF_END(PERFORMANCE_COUNTER_0_BASE,1);
 			PERF_BEGIN(PERFORMANCE_COUNTER_0_BASE,0);
 	#endif
 	#endif
+            *(EE_UINT32 *)TailQ[m]=GlobalTaskID[EE_stkfirst];
         }
         ResourceQ[m][EE_CURRENTCPU]=GlobalTaskID[EE_stkfirst];
         TailQ[m]=(EE_UINT32)&ResourceQ[m][EE_CURRENTCPU];
@@ -254,7 +254,6 @@ __INLINE__ void __ALWAYS_INLINE__ EE_hal_spin_out(EE_TYPESPIN m){
 	#endif
 		register EE_TYPERN_PARAM par;
 		par.pending = 1;
-		//EE_rn_send(task2notify, RN_ReleaseResource, par );
 		EE_di_send(task2notify);
 	#ifdef MF_REL_ADMIN
 		PERF_BEGIN(PERFORMANCE_COUNTER_1_BASE,0);

@@ -3,16 +3,15 @@
 
 StatusType EE_oo_GetResource(ResourceType ResID){
 
-	
-	register EE_UREG isGlobal;
-	register EE_FREG flag;
-
 #ifdef MF_REQ_ADMIN
     PERF_RESET(PERFORMANCE_COUNTER_0_BASE);
     PERF_START_MEASURING(PERFORMANCE_COUNTER_0_BASE);
     PERF_BEGIN(PERFORMANCE_COUNTER_0_BASE,0);
 #endif
 	
+	register EE_UREG isGlobal;
+	register EE_FREG flag;
+
 	isGlobal = ResID & EE_GLOBAL_MUTEX;
 	ResID = ResID & ~EE_GLOBAL_MUTEX;
 	if (ResID >= EE_MAX_RESOURCE) { return E_OS_ID; }

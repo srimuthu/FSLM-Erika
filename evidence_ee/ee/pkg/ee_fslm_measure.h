@@ -14,7 +14,7 @@ Set NUM_MEASUREMENT_PARAMS equal to the number of active
 MF_XXX_XXX flags defined and active below
 */
 
-#define NUM_MEASUREMENT_PARAMS	8
+#define NUM_MEASUREMENT_PARAMS	5
 #define NUM_CPU					4
 
 extern EE_UINT32 * MeasureQ[NUM_CPU];
@@ -41,17 +41,14 @@ Each measurement flag has a unique ID
 	THE SAME PERFORMANCE COUNTER
 	CHECK THE IMPLEMENTED CODE TO CHANGE THE PERFORMACNE 
 	COUNTER AS PER REQUIREMENT
-	C0 S0 -> COUNTER 0, SECTION 1
+	C0 S0 -> COUNTER 0, SECTION 0
+	Valid Combinations: (0,1,4) || (2,3)
 */
-//#define MF_REQ_ADMIN						0	//C0 S0	- I
-//#define MF_REQ_SPIN							1	//C0 S1	- I
-//#define MF_INTR_HANDLER						2	//C0 S0	- II
-//#define MF_INTR_EXEC						3	//C1 S0	- II
-//#define MF_INTR_SEND						4	//C1 S0	- I
-//#define MF_INTR_CS							5	//C0 S2 - II
-//#define MF_REL_ADMIN						6	//C1 S0	- II
-//#define MF_REL_CS							7	//C1 S1	- II
-
+#define MF_REQ_ADMIN						0	//C0 S0	
+#define MF_REQ_SPIN							1	//C0 S1	
+//#define MF_INTR_HANDLER						2	//C0 S0	
+//#define MF_INTR_SEND						3	//C1 S0	
+#define MF_REL_ADMIN						4	//C1 S0	
 /*
 Measurement start template
 #ifdef MF_FLAG
