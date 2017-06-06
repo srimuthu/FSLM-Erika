@@ -21,7 +21,7 @@ StatusType EE_oo_ReleaseResource(ResourceType ResID){
 	if (EE_th_ready_prio[current] > EE_resource_ceiling[ResID]) {return E_OS_ACCESS;}
 	
 	flag = EE_hal_begin_nested_primitive();
-        EE_resource_stack[ResID] = -1;
+        EE_resource_task[ResID] = -1;
 		EE_resource_locked[ResID] = 0;
     	
 		if (isGlobal) EE_hal_spin_out(ResID);

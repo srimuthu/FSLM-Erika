@@ -8,7 +8,7 @@ StatusType EE_oo_ActivateTask(TaskType TaskID){
 	if (TaskID & EE_REMOTE_TID) {
 		EE_TYPERN_PARAM par;
 		par.pending = 1;
-		EE_rn_send(TaskID & ~EE_REMOTE_TID, EE_RN_TASK, par );
+		//EE_rn_send(TaskID & ~EE_REMOTE_TID, EE_RN_TASK, par );
 		return E_OK;
 	}
 

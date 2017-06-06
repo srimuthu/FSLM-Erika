@@ -9,6 +9,7 @@ TASK_RESOURCE = "RESOURCE"
 
 SPIN_PRIO = "EE_th_spin_prio"
 GLOBAL_TASK_ID = "GlobalTaskID"
+RES_TASK    = "EE_resource_task"
 
 THREAD_TOS = "EE_hal_thread_tos"
 SYSTEM_TOS = "EE_nios2_system_tos"

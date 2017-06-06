@@ -12,6 +12,8 @@ int Task_spin=-1;
 int Preemption_took_place=0;
 const int EE_th_spin_prio[] = {0x2,0x2,0x2};
 const int GlobalTaskID[] = {3,4,5};
+EE_TID EE_resource_task[] = {-1, -1, -1};
+
 volatile int timer_fired[] = {0,0,0,0,0};
 
 

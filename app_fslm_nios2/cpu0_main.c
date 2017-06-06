@@ -22,6 +22,7 @@ int Task_spin=-1;
 int Preemption_took_place=0;
 const int EE_th_spin_prio[] = {0x1,0x1,0x1};
 const int GlobalTaskID[] = {0,1,2};
+EE_TID EE_resource_task[] = {-1, -1, -1};
 
 static void handle_button_interrupts_cpu0(void* context, alt_u32 id){
     ActivateTask(task0);

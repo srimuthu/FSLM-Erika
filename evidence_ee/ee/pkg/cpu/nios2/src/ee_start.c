@@ -4,7 +4,8 @@
 static void EE_nios2_IIRQ_handler(void *arg, alt_u32 intno){
   alt_u32 pending;
   pending = alt_irq_interruptible(EE_IPIC_IRQ);  
-  EE_rn_handler();
+  //EE_rn_handler();
+  EE_di_handler();
   alt_irq_non_interruptible(pending);
 }
 

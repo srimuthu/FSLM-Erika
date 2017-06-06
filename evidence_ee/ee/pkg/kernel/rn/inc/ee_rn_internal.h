@@ -87,7 +87,9 @@ typedef union {
    Returned values: >0 if there is an error 
 */
 #ifndef __PRIVATE_RN_SEND__
-extern int EE_rn_send(EE_TYPERN rn, EE_TYPERN t, EE_TYPERN_PARAM par);
+//extern int EE_rn_send(EE_TYPERN rn, EE_TYPERN t, EE_TYPERN_PARAM par);
+extern int EE_di_send(EE_TYPERN rn);
+
 #endif
 
 /* this function can be used into an interrupt handler to handle
@@ -95,7 +97,8 @@ extern int EE_rn_send(EE_TYPERN rn, EE_TYPERN t, EE_TYPERN_PARAM par);
    notification. Execution order may not respect the original
    notification order. */
 #ifndef __PRIVATE_RN_HANDLER__
-extern void EE_rn_handler(void);
+//extern void EE_rn_handler(void);
+extern void EE_di_handler(void);
 #endif
 
 #endif // __RN__

@@ -2,7 +2,7 @@
 #include "ee_internal.h"
 #include "ee_fslm_measure.h"
 
-void EE_rn_execute(ResourceType ResID, EE_TID requesting_task){
+void EE_di_execute(ResourceType ResID, EE_TID requesting_task){
 
 	
 	if(ResID != 0xff && requesting_task != -1){
@@ -20,7 +20,7 @@ void EE_rn_execute(ResourceType ResID, EE_TID requesting_task){
 
 }
 
-void EE_rn_handler(void){
+void EE_di_handler(void){
 #ifdef MF_INTR_HANDLER
     PERF_RESET(PERFORMANCE_COUNTER_0_BASE);
     PERF_START_MEASURING(PERFORMANCE_COUNTER_0_BASE);
@@ -36,7 +36,7 @@ void EE_rn_handler(void){
         for(i=0; i< EE_MAX_RESOURCE ; i++){
             if(EE_resource_locked[i]){
                 ResID = i;
-                requesting_task = EE_resource_stack[ResID];               
+                requesting_task = EE_resource_task[ResID];               
             }
         }
 		EE_hal_IRQ_end_primitive();
@@ -52,7 +52,7 @@ void EE_rn_handler(void){
 		PERF_BEGIN(PERFORMANCE_COUNTER_1_BASE,0);
 	#endif
 	
-		EE_rn_execute(ResID, requesting_task);
+		EE_di_execute(ResID, requesting_task);
 
         EE_hal_IRQ_begin_primitive();
         EE_hal_IRQ_interprocessor_served(EE_CURRENTCPU);

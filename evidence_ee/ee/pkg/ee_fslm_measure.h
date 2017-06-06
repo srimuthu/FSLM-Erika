@@ -8,7 +8,12 @@ Author: S.M.N. Balasubramanian
 #ifndef __EE_FSLM_MEASURE_H__
 #define __EE_FSLM_MEASURE_H__
 
-//Measurement variables
+/*
+Measurement variables
+Set NUM_MEASUREMENT_PARAMS equal to the number of active
+MF_XXX_XXX flags defined and active below
+*/
+
 #define NUM_MEASUREMENT_PARAMS	8
 #define NUM_CPU					4
 
@@ -31,9 +36,15 @@ Each measurement flag has a unique ID
 
 /*
 	OVERHEAD MEASUREMENTS
+	Uncomment as per requirement
+	Beware !! DO NOT UNCOMMENT 2 OR MORE MACROS THAT USE
+	THE SAME PERFORMANCE COUNTER
+	CHECK THE IMPLEMENTED CODE TO CHANGE THE PERFORMACNE 
+	COUNTER AS PER REQUIREMENT
+	C0 S0 -> COUNTER 0, SECTION 1
 */
-#define MF_REQ_ADMIN						0	//C0 S0	- I
-#define MF_REQ_SPIN							1	//C0 S1	- I
+//#define MF_REQ_ADMIN						0	//C0 S0	- I
+//#define MF_REQ_SPIN							1	//C0 S1	- I
 //#define MF_INTR_HANDLER						2	//C0 S0	- II
 //#define MF_INTR_EXEC						3	//C1 S0	- II
 //#define MF_INTR_SEND						4	//C1 S0	- I

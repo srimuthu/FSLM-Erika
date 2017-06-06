@@ -4,7 +4,7 @@
 /* This function can be used to send a remote notification. Parameters: the remote notification. 
 MUST BE >0 Returned values:  1 in case of error, 0 otherwise */
 
-int EE_rn_send(EE_TYPERN rn, EE_TYPERN t, EE_TYPERN_PARAM par){
+int EE_di_send(EE_TYPERN rn){
 	
 #ifdef MF_INTR_SEND
     PERF_RESET(PERFORMANCE_COUNTER_1_BASE);

@@ -13,6 +13,8 @@ int Task_spin=-1;
 int Preemption_took_place=0;
 const int EE_th_spin_prio[] = {0x4,0x4,0x4};
 const int GlobalTaskID[] = {6,7,8};
+EE_TID EE_resource_task[] = {-1, -1, -1};
+
 volatile int timer_fired[] = {0,0,0};
 
 #define TASK6_INTERVAL  1*alt_ticks_per_second()
