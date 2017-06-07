@@ -1,22 +1,89 @@
+#-------------------------------------------------------------------------------
+# File Name : FlexTool.py
+# Purpose   : Utility tool for FSLM implementation in Erika Enterprise
+#             1. Determine priorities from OIL file
+#             2. Receive user input for spin-lock priorities
+#             3. Add spin-lock priorities to Erika application
+#             4. Modify stack to create dual shared stack
+# Author    : Sri Muthu Narayanan Balasubramanian
+# Created   : Feb 2017
+# Copyright : 
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+# Imports
+#-------------------------------------------------------------------------------
 import sys, os , time
 import math
-from flexStrings import *
 import re
 import copy
 from prettytable import PrettyTable
-DEBUG = True
-UI = True
 
+#-------------------------------------------------------------------------------
+# Visualization flags
+#-------------------------------------------------------------------------------
+DEBUG   = False
+UI      = True
+
+#-------------------------------------------------------------------------------
+# File paths
+#-------------------------------------------------------------------------------
+# Source file paths
 # If the source files exist in a different directory
 # prefix SOURCE_NAME_TEMPLATE with the path to the variable
-# Ensure that the path does not contain the string "XXX"
-SOURCE_NAME_TEMPLATE = "cpuXXX_main.c"
-EECFG_NAME_TEMPLATE = "Debug/cpuXXX/eecfg.c"
-OIL_PATH = "conf.oil"
+# Ensure that the path does not contain the sub-string "XXX"
+SOURCE_NAME_TEMPLATE    = "cpuXXX_main.c"
+EECFG_NAME_TEMPLATE     = "Debug/cpuXXX/eecfg.c"
+OIL_PATH                = "conf.oil"
 
+#-------------------------------------------------------------------------------
+# String definitions
+#-------------------------------------------------------------------------------
+
+# OIL file strings
+CPU_DATA        = "CPU_DATA"
+CPU_NAME        = "ID"
+
+TASK_DATA       = "\tTASK "
+TASK_CPU        = "CPU_ID"
+TASK_PRIORITY   = "PRIORITY"
+TASK_RESOURCE   = "RESOURCE"
+
+# CPU application file strings
+SPIN_PRIO       = "EE_th_spin_prio"
+GLOBAL_TASK_ID  = "GlobalTaskID"
+RES_TASK        = "EE_resource_task"
+
+# eecfg.c file strings
+THREAD_TOS      = "EE_hal_thread_tos"
+SYSTEM_TOS      = "EE_nios2_system_tos"
+
+# Warning strings
+WARN_STR        = "\t\n/*!!!THE STACK INFORMATION HAS BEEN MODIFIED BY FLEXTOOL!!*/\n"
+
+#-------------------------------------------------------------------------------
+# Class FlexTool
+#-------------------------------------------------------------------------------
 class FlexTool:
+    """
+        FlexTool Class - Utility tool for FSLM implementation in Erika Enterprise 
+
+        Comments    :   
+                        1. Determine priorities from OIL file
+
+                        2. Receive user input for spin-lock priorities
+
+                        3. Add spin-lock priorities to Erika application
+
+                        4. Modify configuration files to create dual shared stack
+
+    """
 
     def __init__(self, oilPath):
+        """  
+            Constructor for FlexTool class
+        """
+
         self.__initSuccess = False
 
         # Check if the path is valid:
@@ -58,7 +125,17 @@ class FlexTool:
         self.__initSuccess = True
 
     def __parseCpuInfo(self):
-        """Extract CPU information from OIL file"""
+        """
+            Extract CPU information from OIL file
+
+            Called by   :   parseOilFile()
+
+            Comments    :   
+                            Iterate through the OIL file and save CPU info to __cpuInfo dict
+                            __cpuInfo:
+                            { cpuID (int) : cpuName (str) }
+
+        """
 
         if self.__fileBuffer == "":
             sys.exit("OIL file is empty")
@@ -82,6 +159,25 @@ class FlexTool:
                         sys.exit("OIL file cpu data error")
 
     def __createTaskData(self, task_counter):
+        """
+            Create Task information data structure from OIL file
+
+            Comments:
+                        The __taskInfo dict consists of:
+                        
+                        taskID (int) : [  [0] taskName (str),
+
+                                          [1] cpuID (int),
+
+                                          [2] cpuName (str),
+
+                                          [3] taskPriority (int),
+
+                                          [4] resourceBool (bool),
+
+                                          [5] resources (list) = [resourceName (str)] ]
+
+        """
 
         if not self.__task_block:
             sys.exit("Task  block improperly defined in OIL file")
@@ -142,6 +238,15 @@ class FlexTool:
                     self.__createTaskData(task_counter)
 
     def __createResourceList(self):
+        """
+            Create Resouce list data structure from OIL file
+
+            Comments:
+                        __resourceInfo dict consists of
+
+                        {resID (int) :   resource name (str)}
+
+        """
 
         if not self.__taskInfo:
             sys.exit("No task information available from OIL file")
@@ -156,7 +261,19 @@ class FlexTool:
             self.__resourceInfo[i] = res_list[i]
 
     def parseOilFile(self):
-        """Function for parsing the OIL file"""
+        """
+            Parse and extract information from OIL file
+
+            Returns     :   
+                            self.__cpuInfo, self.__taskInfo, self.__resourceInfo
+
+            Calls       :   
+                            __parseCpuInfo(), __parseTaskInfo(), __createResourceList()
+
+            Called by   :   
+                            main() using FlexTool object
+
+        """
 
         if not self.__initSuccess:
             sys.exit("flexSpin class not initialized properly")
@@ -193,7 +310,16 @@ class FlexTool:
 #############################################################################################
 
     def initializeFlexSpinToolVars(self):
-        """Function to initialize the shared private variables"""
+        """
+            Initialize the flexible spin-lock priority tool related variables
+
+            Called by   :   
+                            main() using FlexTool object
+
+            Comments    :   
+                            Uses variables __cpuInfo, __taskInfo, __resourceInfo to construct mapping between tasks, cores and resources
+
+        """
         for task in self.__taskInfo:
             # task2cores mapping
             self.__tasks2cores[task] = self.__taskInfo[task][1] # cpuID
@@ -211,6 +337,9 @@ class FlexTool:
                     ))
 
     def __findGlobalResources(self):
+        """
+            Identify global resources (classify local and global resources)
+        """
 
         # Initialize with all resources set as local (bool False)
         for resource in self.__resourceInfo:
@@ -234,6 +363,9 @@ class FlexTool:
                     self.__tasks2globRes[task].remove(resource)
 
     def __reducePriorities(self):
+        """
+            Transform priority levels within a core to consecutive values starting with 0 (lowest)
+        """
 
         for core in self.__cpuInfo:
             prio_in_core = []
@@ -252,6 +384,9 @@ class FlexTool:
 
 
     def __displayParams(self):
+        """
+            Output task, resource and CPU info to the console
+        """
 
         print("Mapping of cores and tasks ")
         t = PrettyTable(['TaskID','Task','CoreID','Core'])
@@ -303,11 +438,34 @@ class FlexTool:
         print(t)
 
     def __calculateSpinPriorities(self):
+        """
+            Convert user input spin-priorities to HEX
+        """
         for core in self.__userPrio:
             self.__spinPrio[core] = int(math.pow(2,self.__userPrio[core]-1))
 
     def calculatePriorities(self):
-        """Function to calculate the different priority levels"""
+        """
+            Calculate CP, CP hat and HP priorities
+
+            Calls       :   
+                            __findGlobalResources()
+
+                            __reducePriorities()
+
+                            __displayParams()
+
+            Called by   :   
+                            main() using FlexTool object
+
+            Comments    :   
+                            1. Identify global variables
+
+                            2. Transform priority levels within a core to consecutive values starting with 0 (lowest)
+
+                            3. Use available data to find CP, CP hat and HP for every core
+
+        """
 
         self.__findGlobalResources()
         self.__reducePriorities()
@@ -367,6 +525,9 @@ class FlexTool:
             self.__displayParams()
 
     def __calculateStackAllocation(self):
+        """
+            Group tasks on a core to 2 stacks based on spin-lock priority
+        """
 
         for core in self.__cpuInfo:
             stack_edit_counter = 0
@@ -400,6 +561,25 @@ class FlexTool:
             print(t)
 
     def getUserInput(self):
+        """
+            Get input from the user
+
+            Calls       :   
+                            __calculateSpinPriorities()
+
+                            __calculateStackAllocation()
+
+            Called by   :   
+                            main() using FlexTool object
+
+            Comments    :   
+                            1. Prompt user for spin-lock priority per core
+
+                            2. Convert priorities to HEX
+
+                            3. Determine stack allocation of tasks into dual stacks on each core 
+
+        """
         for i in range(len(self.__cpuInfo)):
             valid = False
             while not valid:
@@ -418,6 +598,9 @@ class FlexTool:
         self.__calculateStackAllocation()
 
     def returnFlexSpinInfo(self):
+        """
+            Return __spinPrio, __tasks2stack, __cpuInfo, __tasks2cores 
+        """
         return self.__spinPrio, self.__tasks2stack, self.__cpuInfo, self.__tasks2cores
 
 #############################################################################################
@@ -425,12 +608,32 @@ class FlexTool:
 #############################################################################################
 
 #############################################################################################
-# START OF UPDATE SOURCE
+# START OF SOURCE FILES UPDATE
 #############################################################################################
 
     def updateSourceFiles(self):
 
-        """Function used to update the source files of the cores"""
+        """
+            Update the application source files based on user input for spin-lock priority
+
+            Called by   :   
+                            main() using FlexTool object
+
+            Comments    :   
+                            Update "cpuXX_main.c" files for all cores
+
+                            1. update EE_th_spin_prio
+
+                            2. update GlobalTaskID
+
+                            3. update EE_resource_task
+
+                            Throws error if the above variables are not found in the file
+
+                            Also throws error if the file "cpuXX_main.c" is not found (XX = cpu ID (integer))
+                            
+
+        """
 
         for cpu in self.__cpuInfo:
             file = SOURCE_NAME_TEMPLATE.replace("XXX",str(cpu))
@@ -501,7 +704,25 @@ class FlexTool:
 
     def updateOilFile(self):
 
-        """Modify the stack configuration of the tasks in the OIL file"""
+        """
+            Modifies task stack info in OIL file to accommodate dual stack
+
+            Called by   :   
+                            main() using FlexTool object
+
+            Comments    :   
+                            Update "conf.OIL" file with task STACK attribute
+
+                            1. SHARED for tasks with priorities upto spin-lock priority
+                            2. PRIVATE for other tasks (later modified to shared after code generation by updateCfgFiles() )
+                            
+                            --------------!!!WARNING!!!--------------
+
+                            Only works for single line STACK attribute.
+                            Please specify the STACK attribute in a single line in the OIL file
+                            i.e keyword "STACK" and terminator ";" must be on the same line. 
+
+        """
 
         with open(OIL_PATH, 'r') as file:
             data = file.readlines()
@@ -541,9 +762,22 @@ class FlexTool:
 
     def __findBraceBlock(self, data, item):
 
-        """"Function to identify a brace enclosed block.
-            Takes the file buffer (data) and the item to be found (item) (str)
-            as the input arguments"""
+        """"
+            Identify the brace enclosed block containing a given string
+
+            Arguments: 
+                        data - file buffer ,
+
+                        item - item to be found (str)
+
+            Returns:
+                        Index of brace block start
+
+                        Index of brace block end
+
+                        Data enclosed between in the block containing the (item)            
+
+        """
         if not data:
             sys.exit("No valid data to parse !! ")
 
@@ -572,7 +806,19 @@ class FlexTool:
 
 
     def __editThreadTos(self, block_data, cpu):
+        """
+            Edit "EE_hal_thread_tos" variable in "eecfg.c"
 
+            Arguments:
+                        block_data - Part of file buffer from eecfg.c containing EE_hal_thread_tos,
+
+                        cpu - CPU ID (cpu which the eecfg.c file belongs to)
+
+            Returns:
+                        Success or Failed (bool),
+
+                        Edited file buffer of eecfg.c containing EE_hal_thread_tos
+        """
         if self.__isStackEditRequired[cpu]:
             t2s_counter = 0
             for task in self.__tasks2stack:
@@ -591,6 +837,19 @@ class FlexTool:
             return False, block_data
 
     def __editSystemTos(self, block_data, cpu):
+        """
+            Edit "EE_nios2_system_tos" variable in "eecfg.c"
+
+            Arguments:
+                        block_data - Part of file buffer from eecfg.c containing EE_nios2_system_tos,
+
+                        cpu - CPU ID (cpu which the eecfg.c file belongs to)
+
+            Returns:
+                        Success or Failed (bool),
+
+                        Edited file buffer of eecfg.c containing EE_nios2_system_tos
+        """
 
         if self.__isStackEditRequired[cpu]:
             new_block = []
@@ -615,6 +874,21 @@ class FlexTool:
 
 
     def __spliceTextToFileBuffer(self, file_buffer, block_data, start_index, end_index):
+        """
+            Inserts given text into a file at specified location
+
+            Arguments:
+                        file_buffer - Full file buffer
+
+                        block_data - Data to be inserted
+
+                        start_index - Start position to insert
+
+                        end_index - End position 
+
+            Returns:
+                        splicedList - Full file buffer with block_data inserted
+        """
 
         splicedList = file_buffer[:start_index]
         splicedList = splicedList + block_data
@@ -622,8 +896,16 @@ class FlexTool:
         return splicedList
 
     def updateCfgFiles(self):
-        """Function to update Erika configuration files to
-            include stack information"""
+        """
+            Function to update Erika configuration files "eecfg.c" on all cores to include stack information
+
+            Called by   :   
+                            main() using FlexTool object
+
+            Comments    :   
+                            For all cores, modifies the "eecfg.c" to have only 2 shared stacks per core as per dual stack configuration
+
+        """
 
         for cpu in self.__cpuInfo:
             file = EECFG_NAME_TEMPLATE.replace("XXX",str(cpu))
@@ -638,7 +920,7 @@ class FlexTool:
             isReplaced, bd = self.__editThreadTos(bd, cpu)
 
             if isReplaced:
-                if DEBUG:
+                if UI:
                     print("Modifying stack {0} info for cpu{1}".format(THREAD_TOS, cpu))
                 data = self.__spliceTextToFileBuffer(data, bd, bsi, bei)
 
@@ -647,7 +929,7 @@ class FlexTool:
             isReplaced, bd = self.__editSystemTos(bd, cpu)
 
             if isReplaced:
-                if DEBUG:
+                if UI:
                     print("Modifying stack {0} info for cpu{1}".format(SYSTEM_TOS, cpu))
                 data = self.__spliceTextToFileBuffer(data, bd, bsi, bei)
 
@@ -656,7 +938,13 @@ class FlexTool:
 
 
     def promptUser(self):
+        """
+            Prompts user to rebuild Erika.
 
+            Comments: 
+                        This prompt is followed by the editing of eecfg.c files for dual stack implementation
+
+        """
         user_input = None
         valid = False
         print("OIL file and source files updated ! Clean and Build Erika !!")
@@ -668,6 +956,9 @@ class FlexTool:
             else:
                 print("Invalid input .. Enter again")
 
+#############################################################################################
+# END OF SOURCE FILES UPDATE
+#############################################################################################
 
 
 if __name__ == "__main__":

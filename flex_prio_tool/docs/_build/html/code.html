@@ -1,0 +1,399 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Auto Generated Documentation &#8212; FlexTool 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to FlexTool’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-FlexTool">
+<span id="auto-generated-documentation"></span><h1>Auto Generated Documentation<a class="headerlink" href="#module-FlexTool" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="FlexTool.FlexTool">
+<em class="property">class </em><code class="descclassname">FlexTool.</code><code class="descname">FlexTool</code><span class="sig-paren">(</span><em>oilPath</em><span class="sig-paren">)</span><a class="headerlink" href="#FlexTool.FlexTool" title="Permalink to this definition">¶</a></dt>
+<dd><p>FlexTool Class - Utility tool for FSLM implementation in Erika Enterprise</p>
+<dl class="docutils">
+<dt>Comments <span class="classifier-delimiter">:</span> <span class="classifier"></span></dt>
+<dd><ol class="first last arabic simple">
+<li>Determine priorities from OIL file</li>
+<li>Receive user input for spin-lock priorities</li>
+<li>Add spin-lock priorities to Erika application</li>
+<li>Modify configuration files to create dual shared stack</li>
+</ol>
+</dd>
+</dl>
+<dl class="method">
+<dt id="FlexTool.FlexTool._FlexTool__calculateSpinPriorities">
+<code class="descname">_FlexTool__calculateSpinPriorities</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FlexTool.FlexTool._FlexTool__calculateSpinPriorities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert user input spin-priorities to HEX</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="FlexTool.FlexTool._FlexTool__calculateStackAllocation">
+<code class="descname">_FlexTool__calculateStackAllocation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FlexTool.FlexTool._FlexTool__calculateStackAllocation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Group tasks on a core to 2 stacks based on spin-lock priority</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="FlexTool.FlexTool._FlexTool__createResourceList">
+<code class="descname">_FlexTool__createResourceList</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FlexTool.FlexTool._FlexTool__createResourceList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create Resouce list data structure from OIL file</p>
+<dl class="docutils">
+<dt>Comments:</dt>
+<dd><p class="first">__resourceInfo dict consists of</p>
+<p class="last">{resID (int) :   resource name (str)}</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="FlexTool.FlexTool._FlexTool__createTaskData">
+<code class="descname">_FlexTool__createTaskData</code><span class="sig-paren">(</span><em>task_counter</em><span class="sig-paren">)</span><a class="headerlink" href="#FlexTool.FlexTool._FlexTool__createTaskData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create Task information data structure from OIL file</p>
+<dl class="docutils">
+<dt>Comments:</dt>
+<dd><p class="first">The __taskInfo dict consists of:</p>
+<p>taskID (int) : [  [0] taskName (str),</p>
+<blockquote class="last">
+<div><p>[1] cpuID (int),</p>
+<p>[2] cpuName (str),</p>
+<p>[3] taskPriority (int),</p>
+<p>[4] resourceBool (bool),</p>
+<p>[5] resources (list) = [resourceName (str)] ]</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="FlexTool.FlexTool._FlexTool__displayParams">
+<code class="descname">_FlexTool__displayParams</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FlexTool.FlexTool._FlexTool__displayParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Output task, resource and CPU info to the console</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="FlexTool.FlexTool._FlexTool__editSystemTos">
+<code class="descname">_FlexTool__editSystemTos</code><span class="sig-paren">(</span><em>block_data</em>, <em>cpu</em><span class="sig-paren">)</span><a class="headerlink" href="#FlexTool.FlexTool._FlexTool__editSystemTos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Edit “EE_nios2_system_tos” variable in “eecfg.c”</p>
+<dl class="docutils">
+<dt>Arguments:</dt>
+<dd><p class="first">block_data - Part of file buffer from eecfg.c containing EE_nios2_system_tos,</p>
+<p class="last">cpu - CPU ID (cpu which the eecfg.c file belongs to)</p>
+</dd>
+<dt>Returns:</dt>
+<dd><p class="first">Success or Failed (bool),</p>
+<p class="last">Edited file buffer of eecfg.c containing EE_nios2_system_tos</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="FlexTool.FlexTool._FlexTool__editThreadTos">
+<code class="descname">_FlexTool__editThreadTos</code><span class="sig-paren">(</span><em>block_data</em>, <em>cpu</em><span class="sig-paren">)</span><a class="headerlink" href="#FlexTool.FlexTool._FlexTool__editThreadTos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Edit “EE_hal_thread_tos” variable in “eecfg.c”</p>
+<dl class="docutils">
+<dt>Arguments:</dt>
+<dd><p class="first">block_data - Part of file buffer from eecfg.c containing EE_hal_thread_tos,</p>
+<p class="last">cpu - CPU ID (cpu which the eecfg.c file belongs to)</p>
+</dd>
+<dt>Returns:</dt>
+<dd><p class="first">Success or Failed (bool),</p>
+<p class="last">Edited file buffer of eecfg.c containing EE_hal_thread_tos</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="FlexTool.FlexTool._FlexTool__findBraceBlock">
+<code class="descname">_FlexTool__findBraceBlock</code><span class="sig-paren">(</span><em>data</em>, <em>item</em><span class="sig-paren">)</span><a class="headerlink" href="#FlexTool.FlexTool._FlexTool__findBraceBlock" title="Permalink to this definition">¶</a></dt>
+<dd><p>”
+Identify the brace enclosed block containing a given string</p>
+<dl class="docutils">
+<dt>Arguments: </dt>
+<dd><p class="first">data - file buffer ,</p>
+<p class="last">item - item to be found (str)</p>
+</dd>
+<dt>Returns:</dt>
+<dd><p class="first">Index of brace block start</p>
+<p>Index of brace block end</p>
+<p class="last">Data enclosed between in the block containing the (item)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="FlexTool.FlexTool._FlexTool__findGlobalResources">
+<code class="descname">_FlexTool__findGlobalResources</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FlexTool.FlexTool._FlexTool__findGlobalResources" title="Permalink to this definition">¶</a></dt>
+<dd><p>Identify global resources (classify local and global resources)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="FlexTool.FlexTool._FlexTool__parseCpuInfo">
+<code class="descname">_FlexTool__parseCpuInfo</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FlexTool.FlexTool._FlexTool__parseCpuInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract CPU information from OIL file</p>
+<p>Called by   :   parseOilFile()</p>
+<dl class="docutils">
+<dt>Comments <span class="classifier-delimiter">:</span> <span class="classifier"></span></dt>
+<dd>Iterate through the OIL file and save CPU info to __cpuInfo dict
+__cpuInfo:
+{ cpuID (int) : cpuName (str) }</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="FlexTool.FlexTool._FlexTool__parseTaskInfo">
+<code class="descname">_FlexTool__parseTaskInfo</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FlexTool.FlexTool._FlexTool__parseTaskInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract task information from OIL file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="FlexTool.FlexTool._FlexTool__reducePriorities">
+<code class="descname">_FlexTool__reducePriorities</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FlexTool.FlexTool._FlexTool__reducePriorities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform priority levels within a core to consecutive values starting with 0 (lowest)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="FlexTool.FlexTool._FlexTool__spliceTextToFileBuffer">
+<code class="descname">_FlexTool__spliceTextToFileBuffer</code><span class="sig-paren">(</span><em>file_buffer</em>, <em>block_data</em>, <em>start_index</em>, <em>end_index</em><span class="sig-paren">)</span><a class="headerlink" href="#FlexTool.FlexTool._FlexTool__spliceTextToFileBuffer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts given text into a file at specified location</p>
+<dl class="docutils">
+<dt>Arguments:</dt>
+<dd><p class="first">file_buffer - Full file buffer</p>
+<p>block_data - Data to be inserted</p>
+<p>start_index - Start position to insert</p>
+<p class="last">end_index - End position</p>
+</dd>
+<dt>Returns:</dt>
+<dd>splicedList - Full file buffer with block_data inserted</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="FlexTool.FlexTool.calculatePriorities">
+<code class="descname">calculatePriorities</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FlexTool.FlexTool.calculatePriorities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate CP, CP hat and HP priorities</p>
+<dl class="docutils">
+<dt>Calls <span class="classifier-delimiter">:</span> <span class="classifier"></span></dt>
+<dd><p class="first">__findGlobalResources()</p>
+<p>__reducePriorities()</p>
+<p class="last">__displayParams()</p>
+</dd>
+<dt>Called by <span class="classifier-delimiter">:</span> <span class="classifier"></span></dt>
+<dd>main() using FlexTool object</dd>
+<dt>Comments <span class="classifier-delimiter">:</span> <span class="classifier"></span></dt>
+<dd><ol class="first last arabic simple">
+<li>Identify global variables</li>
+<li>Transform priority levels within a core to consecutive values starting with 0 (lowest)</li>
+<li>Use available data to find CP, CP hat and HP for every core</li>
+</ol>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="FlexTool.FlexTool.getUserInput">
+<code class="descname">getUserInput</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FlexTool.FlexTool.getUserInput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get input from the user</p>
+<dl class="docutils">
+<dt>Calls <span class="classifier-delimiter">:</span> <span class="classifier"></span></dt>
+<dd><p class="first">__calculateSpinPriorities()</p>
+<p class="last">__calculateStackAllocation()</p>
+</dd>
+<dt>Called by <span class="classifier-delimiter">:</span> <span class="classifier"></span></dt>
+<dd>main() using FlexTool object</dd>
+<dt>Comments <span class="classifier-delimiter">:</span> <span class="classifier"></span></dt>
+<dd><ol class="first last arabic simple">
+<li>Prompt user for spin-lock priority per core</li>
+<li>Convert priorities to HEX</li>
+<li>Determine stack allocation of tasks into dual stacks on each core</li>
+</ol>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="FlexTool.FlexTool.initializeFlexSpinToolVars">
+<code class="descname">initializeFlexSpinToolVars</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FlexTool.FlexTool.initializeFlexSpinToolVars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the flexible spin-lock priority tool related variables</p>
+<dl class="docutils">
+<dt>Called by <span class="classifier-delimiter">:</span> <span class="classifier"></span></dt>
+<dd>main() using FlexTool object</dd>
+<dt>Comments <span class="classifier-delimiter">:</span> <span class="classifier"></span></dt>
+<dd>Uses variables __cpuInfo, __taskInfo, __resourceInfo to construct mapping between tasks, cores and resources</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="FlexTool.FlexTool.parseOilFile">
+<code class="descname">parseOilFile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FlexTool.FlexTool.parseOilFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse and extract information from OIL file</p>
+<dl class="docutils">
+<dt>Returns <span class="classifier-delimiter">:</span> <span class="classifier"></span></dt>
+<dd>self.__cpuInfo, self.__taskInfo, self.__resourceInfo</dd>
+<dt>Calls <span class="classifier-delimiter">:</span> <span class="classifier"></span></dt>
+<dd>__parseCpuInfo(), __parseTaskInfo(), __createResourceList()</dd>
+<dt>Called by <span class="classifier-delimiter">:</span> <span class="classifier"></span></dt>
+<dd>main() using FlexTool object</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="FlexTool.FlexTool.promptUser">
+<code class="descname">promptUser</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FlexTool.FlexTool.promptUser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prompts user to rebuild Erika.</p>
+<dl class="docutils">
+<dt>Comments: </dt>
+<dd>This prompt is followed by the editing of eecfg.c files for dual stack implementation</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="FlexTool.FlexTool.returnFlexSpinInfo">
+<code class="descname">returnFlexSpinInfo</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FlexTool.FlexTool.returnFlexSpinInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return __spinPrio, __tasks2stack, __cpuInfo, __tasks2cores</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="FlexTool.FlexTool.updateCfgFiles">
+<code class="descname">updateCfgFiles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FlexTool.FlexTool.updateCfgFiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to update Erika configuration files “eecfg.c” on all cores to include stack information</p>
+<dl class="docutils">
+<dt>Called by <span class="classifier-delimiter">:</span> <span class="classifier"></span></dt>
+<dd>main() using FlexTool object</dd>
+<dt>Comments <span class="classifier-delimiter">:</span> <span class="classifier"></span></dt>
+<dd>For all cores, modifies the “eecfg.c” to have only 2 shared stacks per core as per dual stack configuration</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="FlexTool.FlexTool.updateOilFile">
+<code class="descname">updateOilFile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FlexTool.FlexTool.updateOilFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modifies task stack info in OIL file to accommodate dual stack</p>
+<dl class="docutils">
+<dt>Called by <span class="classifier-delimiter">:</span> <span class="classifier"></span></dt>
+<dd>main() using FlexTool object</dd>
+<dt>Comments <span class="classifier-delimiter">:</span> <span class="classifier"></span></dt>
+<dd><p class="first">Update “conf.OIL” file with task STACK attribute</p>
+<ol class="arabic simple">
+<li>SHARED for tasks with priorities upto spin-lock priority</li>
+<li>PRIVATE for other tasks (later modified to shared after code generation by updateCfgFiles() )</li>
+</ol>
+<p>————–!!!WARNING!!!————–</p>
+<p class="last">Only works for single line STACK attribute.
+Please specify the STACK attribute in a single line in the OIL file
+i.e keyword “STACK” and terminator “;” must be on the same line.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="FlexTool.FlexTool.updateSourceFiles">
+<code class="descname">updateSourceFiles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FlexTool.FlexTool.updateSourceFiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the application source files based on user input for spin-lock priority</p>
+<dl class="docutils">
+<dt>Called by <span class="classifier-delimiter">:</span> <span class="classifier"></span></dt>
+<dd>main() using FlexTool object</dd>
+<dt>Comments <span class="classifier-delimiter">:</span> <span class="classifier"></span></dt>
+<dd><p class="first">Update “cpuXX_main.c” files for all cores</p>
+<ol class="arabic simple">
+<li>update EE_th_spin_prio</li>
+<li>update GlobalTaskID</li>
+<li>update EE_resource_task</li>
+</ol>
+<p>Throws error if the above variables are not found in the file</p>
+<p class="last">Also throws error if the file “cpuXX_main.c” is not found (XX = cpu ID (integer))</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to FlexTool’s documentation!</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/code.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, S.M.N. Balasubramanian.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/code.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
