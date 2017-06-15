@@ -439,7 +439,7 @@ class FlexTool:
 
     def __calculateSpinPriorities(self):
         """
-            Convert user input spin-priorities to HEX
+            Convert user input spin-priorities to Erika format (2^i)
         """
         for core in self.__userPrio:
             self.__spinPrio[core] = int(math.pow(2,self.__userPrio[core]-1))
@@ -544,7 +544,7 @@ class FlexTool:
             else:
                 self.__isStackEditRequired[core] = False
         if UI:
-            print("\nSpin priorities ")
+            print("\nSpin priorities (converted to Erika format)")
             head1 = [" "]
             head2 = [str(self.__cpuInfo[cpu]) for cpu in self.__cpuInfo]
             t = PrettyTable(head1 + head2)

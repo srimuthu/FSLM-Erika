@@ -98,7 +98,7 @@ CPU test_application {
 		ACTIVATION = 1;
 		SCHEDULE = FULL;
 		AUTOSTART = FALSE;
-		STACK = SHARED;
+		STACK = PRIVATE{ 	SYS_SIZE = 0x100; 	};
 	};
 	
 	TASK task2 {
@@ -108,7 +108,7 @@ CPU test_application {
 		ACTIVATION = 1;
 		SCHEDULE = FULL;
 		AUTOSTART = FALSE;
-		STACK = SHARED;
+		STACK = PRIVATE{ 	SYS_SIZE = 0x100; 	};
 	};
 	
 	TASK task3 {
@@ -140,7 +140,7 @@ CPU test_application {
 		ACTIVATION = 1;
 		SCHEDULE = FULL;
 		AUTOSTART = FALSE;
-		STACK = SHARED;
+		STACK = PRIVATE{ 	SYS_SIZE = 0x100; 	};
 	};
 
 	TASK task6 {
@@ -215,7 +215,7 @@ CPU test_application {
 		ACTIVATION = 1;
 		SCHEDULE = FULL;
 		AUTOSTART = FALSE;
-		STACK = PRIVATE{ 	SYS_SIZE = 0x100; 	};
+		STACK = SHARED;
 	};
 	RESOURCE mutex0 {
 		RESOURCEPROPERTY = STANDARD { APP_SRC = "resource_0_data.c"; };
