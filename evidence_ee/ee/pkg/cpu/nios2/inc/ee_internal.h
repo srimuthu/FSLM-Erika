@@ -58,8 +58,7 @@ extern EE_UINT32 RQ_cpu9[10];
 extern int spin_lock;
 extern const int EE_th_spin_prio[];
 extern const int GlobalTaskID[];
-extern EE_TID EE_resource_task[];
-  
+extern int EE_resource_task[2];
 
 
 #endif /*FSLM2_H_*/
@@ -193,13 +192,13 @@ __INLINE__ void __ALWAYS_INLINE__ EE_hal_spin_in(EE_TYPESPIN m){
 	#endif
 	#endif
 			spin_lock=1;
+            *(EE_UINT32 *)TailQ[m]=GlobalTaskID[EE_stkfirst];
 	#ifdef MF_REQ_ADMIN
 	#ifdef MF_REQ_SPIN
 			PERF_END(PERFORMANCE_COUNTER_0_BASE,1);
 			PERF_BEGIN(PERFORMANCE_COUNTER_0_BASE,0);
 	#endif
 	#endif
-            *(EE_UINT32 *)TailQ[m]=GlobalTaskID[EE_stkfirst];
         }
         ResourceQ[m][EE_CURRENTCPU]=GlobalTaskID[EE_stkfirst];
         TailQ[m]=(EE_UINT32)&ResourceQ[m][EE_CURRENTCPU];
@@ -252,9 +251,20 @@ __INLINE__ void __ALWAYS_INLINE__ EE_hal_spin_out(EE_TYPESPIN m){
 	#ifdef MF_REL_ADMIN
 		PERF_END(PERFORMANCE_COUNTER_1_BASE,0);
 	#endif
+	#ifdef MF_INTR_SEND
+			PERF_RESET(PERFORMANCE_COUNTER_1_BASE);
+			PERF_START_MEASURING(PERFORMANCE_COUNTER_1_BASE);
+			PERF_BEGIN(PERFORMANCE_COUNTER_1_BASE,0);
+	#endif
 		register EE_TYPERN_PARAM par;
 		par.pending = 1;
 		EE_di_send(task2notify);
+		
+	#ifdef MF_INTR_SEND	
+			PERF_END(PERFORMANCE_COUNTER_1_BASE,0);
+			PERF_STOP_MEASURING(PERFORMANCE_COUNTER_1_BASE);
+			MeasureQ[EE_CURRENTCPU][MF_INTR_SEND] = perf_get_section_time((void *)PERFORMANCE_COUNTER_1_BASE, 0);
+	#endif 
 	#ifdef MF_REL_ADMIN
 		PERF_BEGIN(PERFORMANCE_COUNTER_1_BASE,0);
 	#endif

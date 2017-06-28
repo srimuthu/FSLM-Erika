@@ -6,12 +6,7 @@ MUST BE >0 Returned values:  1 in case of error, 0 otherwise */
 
 int EE_di_send(EE_TYPERN rn){
 	
-#ifdef MF_INTR_SEND
-    PERF_RESET(PERFORMANCE_COUNTER_1_BASE);
-    PERF_START_MEASURING(PERFORMANCE_COUNTER_1_BASE);
-    PERF_BEGIN(PERFORMANCE_COUNTER_1_BASE,0);
-#endif
-	
+
     register EE_UINT8 cpu;
     register EE_FREG flag;
 
@@ -30,13 +25,7 @@ int EE_di_send(EE_TYPERN rn){
     } else {       
         EE_hal_IRQ_interprocessor(cpu);  
     }  
-    EE_hal_end_nested_primitive(flag);
-
-#ifdef MF_INTR_SEND	
-	PERF_END(PERFORMANCE_COUNTER_1_BASE,0);
-	PERF_STOP_MEASURING(PERFORMANCE_COUNTER_1_BASE);
-    MeasureQ[EE_CURRENTCPU][MF_INTR_SEND] = perf_get_section_time((void *)PERFORMANCE_COUNTER_1_BASE, 0);
-#endif    
+    EE_hal_end_nested_primitive(flag); 
     
     return 0;
 }

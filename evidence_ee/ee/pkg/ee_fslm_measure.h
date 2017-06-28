@@ -44,11 +44,12 @@ Each measurement flag has a unique ID
 	C0 S0 -> COUNTER 0, SECTION 0
 	Valid Combinations: (0,1,4) || (2,3)
 */
-#define MF_REQ_ADMIN						0	//C0 S0	
-#define MF_REQ_SPIN							1	//C0 S1	
-//#define MF_INTR_HANDLER						2	//C0 S0	
-//#define MF_INTR_SEND						3	//C1 S0	
-#define MF_REL_ADMIN						4	//C1 S0	
+//#define MF_REQ_ADMIN						0	//C0 S0	
+//#define MF_REQ_SPIN							1	//C0 S1	
+#define MF_INTR_HANDLER						2	//C0 S0	
+#define MF_INTR_SEND						3	//C1 S0	
+//#define MF_REL_ADMIN						4	//C1 S0	
+//#define MF_MUTEX							0
 /*
 Measurement start template
 #ifdef MF_FLAG

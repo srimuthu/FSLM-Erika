@@ -26,22 +26,8 @@ void EE_di_handler(void){
     PERF_START_MEASURING(PERFORMANCE_COUNTER_0_BASE);
     PERF_BEGIN(PERFORMANCE_COUNTER_0_BASE,0);
 #endif
-
-		int i;
-        ResourceType ResID = 0xff;
-        EE_TID requesting_task = -1;
-
-        EE_hal_IRQ_begin_primitive();
-        // Find which resource is locked
-        for(i=0; i< EE_MAX_RESOURCE ; i++){
-            if(EE_resource_locked[i]){
-                ResID = i;
-                requesting_task = EE_resource_task[ResID];               
-            }
-        }
-		EE_hal_IRQ_end_primitive();
-		
-		EE_di_execute(ResID, requesting_task);
+	
+		EE_di_execute(EE_resource_task[0], EE_resource_task[1]);
 
         EE_hal_IRQ_begin_primitive();
         EE_hal_IRQ_interprocessor_served(EE_CURRENTCPU);
