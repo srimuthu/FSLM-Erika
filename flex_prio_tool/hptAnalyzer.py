@@ -1,4 +1,4 @@
-NUM_PROC = 3
+NUM_PROC = 16
 # task parameters for tasks accessing resources
 # in terms of us
 # GCS_MIN = 5
@@ -25,13 +25,13 @@ NUM_PROC = 3
 GCS_MIN = 5
 GCS_MAX = 5000
 NCS	= 3000
-RQ1 = 395
-RQ2 = 444
-AC1	= 251
-AC2 = 424
+RQ1 = 369
+RQ2 = 383
+AC1	= 122
+AC2 = 295
 AC3 = 597
-RL1 = 383
-RL2 = 492
+RL1 = 373
+RL2 = 477
 RL3 = 556
 RL4 = 729
 AJ = 1

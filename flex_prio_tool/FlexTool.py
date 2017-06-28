@@ -52,7 +52,6 @@ TASK_RESOURCE   = "RESOURCE"
 # CPU application file strings
 SPIN_PRIO       = "EE_th_spin_prio"
 GLOBAL_TASK_ID  = "GlobalTaskID"
-RES_TASK        = "EE_resource_task"
 
 # eecfg.c file strings
 THREAD_TOS      = "EE_hal_thread_tos"
@@ -626,8 +625,6 @@ class FlexTool:
 
                             2. update GlobalTaskID
 
-                            3. update EE_resource_task
-
                             Throws error if the above variables are not found in the file
 
                             Also throws error if the file "cpuXX_main.c" is not found (XX = cpu ID (integer))
@@ -651,7 +648,7 @@ class FlexTool:
                 data = file.readlines()
 
             # line_id =[ "EE_th_spin_prio", "GlobalTaskID"]
-            indices = [-1, -1, -1]
+            indices = [-1, -1]
 
             if data:
                 for line in data:
@@ -659,8 +656,6 @@ class FlexTool:
                         indices[0] = data.index(line)
                     if line.find(GLOBAL_TASK_ID) != -1:
                         indices[1] = data.index(line)
-                    if line.find(RES_TASK) != -1:
-                        indices[2] = data.index(line)
             else:
                 sys.exit("No content present in source file")
 
@@ -687,17 +682,6 @@ class FlexTool:
 
             else:
                 print("NOT found GlobalTaskID - Application may not work as intended")
-
-            if indices[2] != -1:
-                glob_text = "EE_TID " + RES_TASK + "[] = {"
-                for res in self.__resourceInfo:
-                    glob_text += "-1" + ","
-                glob_text = glob_text[:-1]
-                glob_text += "};\n"
-                data[indices[2]] = glob_text
-
-            else:
-                print("NOT found EE_resource_task - Application may not work as intended")
 
             with open(fileName, 'w') as file:
                 file.writelines(data)
