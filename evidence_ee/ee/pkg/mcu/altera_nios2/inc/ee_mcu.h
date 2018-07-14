@@ -47,7 +47,7 @@
 #define __INCLUDE_NIOSII_MCU_H__
 
 #include "system.h"
-//#include "altera_avalon_timer_regs.h"
+#include "altera_avalon_timer_regs.h"
 
 /*************************************************************************
  Time handling

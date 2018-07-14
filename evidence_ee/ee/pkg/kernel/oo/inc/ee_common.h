@@ -203,7 +203,7 @@ extern EE_TID EE_rq_first;
 #endif
 
 
-
+#if defined(__OO_BCC2__) || defined(__OO_ECC2__)
 
 /*
  * ready queue implementation:
@@ -249,7 +249,7 @@ extern EE_TID      EE_rq_pairs_tid[];
 /* a list of unused pairs */
 extern EE_TYPEPAIR EE_rq_free; /* pointer to a free pair; initvalue=0 */
 
-
+#endif
 
 
 /* Event handling */
@@ -355,9 +355,9 @@ typedef struct {
   EE_TYPENOTIFY action;       /* task=0 event=1 callb=2 */
   
   EE_TID TaskID;
-
+#if defined(__OO_ECC1__) || defined(__OO_ECC2__)
   EE_TYPEEVENTMASK Mask;
-
+#endif
   EE_ADDR f;
 } EE_oo_alarm_ROM_type;
 
@@ -670,10 +670,10 @@ typedef EE_TYPEEVENTMASK *EventMaskRefType;
 
 struct EE_TYPESEM {
   unsigned int count;
-
+#if defined(__OO_ECC1__) || defined(__OO_ECC2__)
   EE_TID    first;
   EE_TID    last;
-
+#endif
 };
 
 /* Data type of the event mask. */
@@ -819,7 +819,7 @@ union EE_oo_ErrorHook_parameters {
   } ReleaseResource_prm;
 #endif
 
-
+#if defined(__OO_ECC1__) || defined(__OO_ECC2__)
   struct {
     TaskType TaskID;
     EventMaskType Mask;
@@ -837,7 +837,7 @@ union EE_oo_ErrorHook_parameters {
   struct {
     EventMaskType Mask;
   } WaitEvent_prm;
-
+#endif
 
 #ifndef __OO_NO_ALARMS__
   struct {
@@ -869,9 +869,9 @@ union EE_oo_ErrorHook_parameters {
   struct {
     AlarmType AlarmID;
     TaskType TaskID;
-
+#if defined(__OO_ECC1__) || defined(__OO_ECC2__)
     EventMaskType Mask;
-
+#endif
     EE_TYPENOTIFY action;
   } CounterTick_prm;
 

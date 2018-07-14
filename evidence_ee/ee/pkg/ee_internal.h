@@ -217,9 +217,9 @@ extern "C" {
 #include "kernel/frsh/inc/ee_internal.h"
 #endif
 
-
+#if defined(__OO_BCC1__) || defined(__OO_BCC2__) || defined(__OO_ECC1__) || defined(__OO_ECC2__)
 #include "kernel/oo/inc/ee_internal.h"
-
+#endif
 
 #ifdef __SEM__
 #include "kernel/sem/inc/ee_sem.h"

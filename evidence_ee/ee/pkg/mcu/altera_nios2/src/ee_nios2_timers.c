@@ -43,7 +43,7 @@
  * CVS: $Id: ee_mcu.h,v 1.2 2008/07/24 14:26:55 francesco Exp $
  */
 
- //#include "altera_avalon_timer_regs.h"
+#include "altera_avalon_timer_regs.h"
 #include "system.h"
 #include "ee_internal.h"
 

@@ -81,10 +81,10 @@ extern EE_TYPEBOOL EE_ErrorHook_nested_flag;
 extern EE_TYPEBOOL EE_oo_no_preemption;
 #endif
 
-
+#if defined(__OO_BCC2__) || defined(__OO_ECC2__)
 /* a lookup table to speedup ready queue handling */
 extern const EE_INT8 EE_rq_lookup[];
-
+#endif
 
 /* Internal Queue management functions */
 
@@ -95,12 +95,29 @@ __INLINE__ EE_TID __ALWAYS_INLINE__ EE_rq_queryfirst(void)
 { return EE_rq_first; }
 #endif
 
-
+#if defined(__OO_BCC2__) || defined(__OO_ECC2__)
 EE_TID EE_rq_queryfirst(void);
-
+#endif
 #endif
 
+/* __INLINE__ EE_TID __ALWAYS_INLINE__ EE_stk_queryfirst(void) in intfunc.h */
 
+/* extract the running task from the stack */
+#ifndef __PRIVATE_STK_GETFIRST__
+__INLINE__ void __ALWAYS_INLINE__ EE_stk_getfirst(void)
+{
+    EE_stkfirst = EE_th_next[EE_stkfirst];
+}
+#endif
+
+/* insert a task into the stack  data structures */
+#ifndef __PRIVATE_STK_INSERTFIRST__
+__INLINE__ void __ALWAYS_INLINE__ EE_stk_insertfirst(EE_TID t)
+{
+    EE_th_next[t] = EE_stkfirst;
+    EE_stkfirst = t;
+}
+#endif
 
 /* insert a task into the ready queue */
 #ifndef __PRIVATE_RQ_INSERT__
@@ -154,7 +171,7 @@ StatusType EE_oo_ActivateTask(TaskType TaskID);
 
 /* see ee_kernel.h - this function is here because used by the rn */
 /* 13.5.3.1: ECC1, ECC2 */
-
+#if defined(__OO_ECC1__) || defined(__OO_ECC2__)
 #ifndef __PRIVATE_SETEVENT__
 #ifdef __OO_EXTENDED_STATUS__
 StatusType EE_oo_SetEvent(TaskType TaskID, EventMaskType Mask);
@@ -162,7 +179,7 @@ StatusType EE_oo_SetEvent(TaskType TaskID, EventMaskType Mask);
 void EE_oo_SetEvent(TaskType TaskID, EventMaskType Mask);
 #endif
 #endif
-
+#endif
 
 
 /***************************************************************************

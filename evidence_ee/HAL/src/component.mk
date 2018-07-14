@@ -97,6 +97,8 @@ endif
 ifeq ($(EE_OO), YES)
 EE_C_SRCS += \
 	ee/pkg/kernel/oo/src/ee_activate.c \
+	ee/pkg/kernel/oo/src/ee_schedule.c \
+	ee/pkg/kernel/oo/src/ee_force_schedule.c \
 	ee/pkg/kernel/oo/src/ee_terminat.c \
 	ee/pkg/kernel/oo/src/ee_thendin.c \
 	ee/pkg/kernel/oo/src/ee_irqendin.c \
@@ -105,12 +107,29 @@ EE_C_SRCS += \
 	ee/pkg/kernel/oo/src/ee_rq_exchg.c \
 	ee/pkg/kernel/oo/src/ee_rq_first.c \
 	ee/pkg/kernel/oo/src/ee_rq_inser.c \
+	ee/pkg/kernel/oo/src/ee_shtdown.c \
 	ee/pkg/kernel/oo/src/ee_startos.c
+
+ifneq ($(findstring __OO_NO_CHAINTASK__,$(EEOPT)) , __OO_NO_CHAINTASK__)
+EE_C_SRCS += \
+	ee/pkg/kernel/oo/src/ee_chaintas.c
+endif
 
 ifneq ($(findstring __OO_NO_RESOURCES__,$(EEOPT)) , __OO_NO_RESOURCES__)
 EE_C_SRCS += \
 	ee/pkg/kernel/oo/src/ee_lockres.c \
 	ee/pkg/kernel/oo/src/ee_ulockres.c
+endif
+
+
+ifneq ($(findstring __OO_NO_ALARMS__,$(EEOPT)) , __OO_NO_ALARMS__)
+EE_C_SRCS += \
+	ee/pkg/kernel/oo/src/ee_alcancel.c \
+	ee/pkg/kernel/oo/src/ee_algetbase.c \
+	ee/pkg/kernel/oo/src/ee_alget.c \
+	ee/pkg/kernel/oo/src/ee_alsetabs.c \
+	ee/pkg/kernel/oo/src/ee_alsetrel.c \
+	ee/pkg/kernel/oo/src/ee_altick.c
 endif
 
 ifeq ($(EE_OO_ECC) , YES)
@@ -176,6 +195,15 @@ endif
 
 # Kernel: __ALARMS__
 # ------------------------------------------------------------------------------------
+
+ifeq ($(findstring __ALARMS__,$(EEOPT)) , __ALARMS__)
+EE_C_SRCS  += \
+	ee/pkg/kernel/alarms/src/ee_alcancel.c \
+	ee/pkg/kernel/alarms/src/ee_altick.c \
+	ee/pkg/kernel/alarms/src/ee_alget.c \
+	ee/pkg/kernel/alarms/src/ee_alsetabs.c \
+	ee/pkg/kernel/alarms/src/ee_alsetrel.c
+endif
 
 
 # COM: __CABS__

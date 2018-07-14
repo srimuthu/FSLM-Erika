@@ -58,6 +58,8 @@ endif
 
 ifeq ($(OO), YES)
 EE_SRCS += pkg/kernel/oo/src/ee_activate.c
+EE_SRCS += pkg/kernel/oo/src/ee_schedule.c
+EE_SRCS += pkg/kernel/oo/src/ee_force_schedule.c
 EE_SRCS += pkg/kernel/oo/src/ee_terminat.c
 EE_SRCS += pkg/kernel/oo/src/ee_thendin.c
 EE_SRCS += pkg/kernel/oo/src/ee_irqendin.c
@@ -66,8 +68,12 @@ EE_SRCS += pkg/kernel/oo/src/ee_lookup.c
 EE_SRCS += pkg/kernel/oo/src/ee_rq_exchg.c
 EE_SRCS += pkg/kernel/oo/src/ee_rq_first.c
 EE_SRCS += pkg/kernel/oo/src/ee_rq_inser.c
+EE_SRCS += pkg/kernel/oo/src/ee_shtdown.c
 EE_SRCS += pkg/kernel/oo/src/ee_startos.c
 
+ifneq ($(findstring __OO_NO_CHAINTASK__,$(EEOPT)) , __OO_NO_CHAINTASK__)
+EE_SRCS += pkg/kernel/oo/src/ee_chaintas.c
+endif
 
 ifneq ($(findstring __OO_NO_RESOURCES__,$(EEOPT)) , __OO_NO_RESOURCES__)
 EE_SRCS += pkg/kernel/oo/src/ee_lockres.c
@@ -75,6 +81,14 @@ EE_SRCS += pkg/kernel/oo/src/ee_ulockres.c
 endif
 
 
+ifneq ($(findstring __OO_NO_ALARMS__,$(EEOPT)) , __OO_NO_ALARMS__)
+EE_SRCS += pkg/kernel/oo/src/ee_alcancel.c
+EE_SRCS += pkg/kernel/oo/src/ee_algetbase.c
+EE_SRCS += pkg/kernel/oo/src/ee_alget.c
+EE_SRCS += pkg/kernel/oo/src/ee_alsetabs.c
+EE_SRCS += pkg/kernel/oo/src/ee_alsetrel.c
+EE_SRCS += pkg/kernel/oo/src/ee_altick.c
+endif
 
 ifeq ($(OO_ECC) , YES)
 EE_SRCS += pkg/kernel/oo/src/ee_evclear.c
@@ -83,6 +97,17 @@ EE_SRCS += pkg/kernel/oo/src/ee_evset.c
 EE_SRCS += pkg/kernel/oo/src/ee_evwait.c 
 endif
 
+ifeq ($(findstring __BIN_DISTR,$(EEOPT)) , __BIN_DISTR)
+EE_SRCS += pkg/kernel/oo/src/ee_disableallinterrupts.c
+EE_SRCS += pkg/kernel/oo/src/ee_enableallinterrupts.c
+EE_SRCS += pkg/kernel/oo/src/ee_suspendallinterrupts.c
+EE_SRCS += pkg/kernel/oo/src/ee_resumeallinterrupts.c
+EE_SRCS += pkg/kernel/oo/src/ee_suspendosinterrupts.c
+EE_SRCS += pkg/kernel/oo/src/ee_resumeosinterrupts.c
+EE_SRCS += pkg/kernel/oo/src/ee_getactiveapplicationmode.c
+EE_SRCS += pkg/kernel/oo/src/ee_gettaskid.c
+EE_SRCS += pkg/kernel/oo/src/ee_gettaskstate.c
+endif
 
 ifeq ($(findstring __OO_SEM__,$(EEOPT)) , __OO_SEM__)
 EE_SRCS += pkg/kernel/oo/src/ee_sempost.c

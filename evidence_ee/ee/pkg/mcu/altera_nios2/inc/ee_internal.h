@@ -48,7 +48,7 @@
 #ifndef __INCLUDE_NIOSII_INTERNAL_H__
 #define __INCLUDE_NIOSII_INTERNAL_H__
 
-//#include "altera_avalon_timer_regs.h"
+#include "altera_avalon_timer_regs.h"
 #include "system.h"
 
 /*************************************************************************

@@ -224,9 +224,9 @@ extern "C" {
 #endif
 
 /* OO */
-
+#if defined(__OO_BCC1__) || defined(__OO_BCC2__) || defined(__OO_ECC1__) || defined(__OO_ECC2__)
 #include "kernel/oo/inc/ee_kernel.h"
-
+#endif
 
 /* SEM */
 #ifdef __SEM__
@@ -251,14 +251,6 @@ extern "C" {
 
 #include "ee_api.h"
 
-	/*
-	*
-	* MEASUREMENT
-	*
-	*/
-
-#include "ee_fslm_measure.h"
-//#include "altera_avalon_timer.h"
 
 #if defined(__cplusplus)
 };

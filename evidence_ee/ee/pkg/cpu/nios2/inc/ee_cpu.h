@@ -193,6 +193,7 @@ extern struct EE_TOS EE_nios2_IRQ_tos;
 
 #endif /* __MULTI__ */
 
+#if defined(__OO_BCC1__) || defined(__OO_BCC2__) || defined(__OO_ECC1__) || defined(__OO_ECC2__)
 
 /* this is a safe place to put sp_sys when EE_hal_terminate_savestk
    is called into EE_oo_thread_stub */
@@ -205,6 +206,7 @@ extern const EE_ADDR EE_terminate_real_th_body[];
 /* this is the stub that have to be put into the EE_th_body array */
 extern void EE_oo_thread_stub(void);
 
+#endif
 
 
 /*********************************************************************

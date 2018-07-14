@@ -85,9 +85,9 @@
 #include "kernel/fp/inc/ee_api.h"
 #endif
 
-
+#if defined(__OO_BCC1__) || defined(__OO_BCC2__) || defined(__OO_ECC1__) || defined(__OO_ECC2__)
 #include "kernel/oo/inc/ee_api.h"
-
+#endif
 
 #ifdef __EDF__
 #include "kernel/edf/inc/ee_api.h"
